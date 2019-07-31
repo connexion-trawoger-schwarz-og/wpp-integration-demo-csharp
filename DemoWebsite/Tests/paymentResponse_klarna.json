@@ -1,0 +1,46 @@
+{
+  "payment" : {
+    "parent-transaction-id" : "ac10ddcd-0e65-4771-89f6-7f5f5d468a3a",
+    "account-holder" : {
+      "first-name" : "Max",
+      "last-name" : "Mustermann",
+      "account-info" : { }
+    },
+    "bank-account" : {
+      "account-number" : "23456789",
+      "bic" : "SFRTDE20XXX",
+      "iban" : "DE06000000000023456789",
+      "bank-code" : "88888888"
+    },
+    "payment-methods" : {
+      "payment-method" : [ {
+        "payload" : { },
+        "name" : "sofortbanking"
+      } ]
+    },
+    "success-redirect-url" : "https://localhost:44372/home/Success",
+    "transaction-id" : "2b2c7e8b-d74e-4e94-9f36-97ef6a551070",
+    "request-id" : "257bd58a-22cb-4558-a892-7be695e2a136",
+    "transaction-state" : "success",
+    "completion-time-stamp" : "2019-07-31T11:40:38",
+    "requested-amount" : {
+      "currency" : "EUR",
+      "value" : 1.230000
+    },
+    "statuses" : {
+      "status" : [ {
+        "description" : "Successful confirmation received from the bank.",
+        "severity" : "information",
+        "code" : "201.1126"
+      } ]
+    },
+    "transaction-type" : "debit",
+    "merchant-account-id" : {
+      "value" : "f19d17a2-01ae-11e2-9085-005056a96a54"
+    },
+    "cancel-redirect-url" : "https://localhost:44372/home/Cancel",
+    "fail-redirect-url" : "https://localhost:44372/home/Error",
+    "api-id" : "wpp",
+    "descriptor" : "test"
+  }
+}

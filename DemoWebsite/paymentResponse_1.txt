@@ -1,0 +1,51 @@
+  response: {
+    "payment": {
+      "transaction-id": "be954831-d896-491f-9990-08a027cdd4a0",
+      "request-id": "863750c5-a76b-4d4a-8f26-f1c25a5c096e",
+      "transaction-state": "success",
+      "completion-time-stamp": "2019-07-31T09:34:30",
+      "requested-amount": {
+        "currency": "EUR",
+        "value": 10
+      },
+      "statuses": {
+        "status": [
+          {
+            "description": "3d-acquirer:The resource was successfully created.",
+            "severity": "information",
+            "code": "201.0000"
+          }
+        ]
+      },
+      "authorization-code": "847397",
+      "merchant-account-id": {
+        "value": "7a6dd74f-06ab-4f3f-a864-adc52687270a"
+      },
+      "cancel-redirect-url": "https://localhost:44372/home/Cancel",
+      "fail-redirect-url": "https://localhost:44372/home/Error",
+      "success-redirect-url": "https://localhost:44372/home/Success",
+      "account-holder": {
+        "account-info": {},
+        "last-name": "Doe",
+        "first-name": "John"
+      },
+      "payment-methods": {
+        "payment-method": [
+          {
+            "payload": {},
+            "name": "creditcard"
+          }
+        ]
+      },
+      "transaction-type": "authorization",
+      "card-token": {
+        "token-id": "4242796444090018",
+        "masked-account-number": "420000******0018"
+      },
+      "api-id": "wpp",
+      "device": {
+        "fingerprint": "5e5de424-f853-2cf9-85c7-154b849fd09d"
+      },
+      "descriptor": ""
+    }
+  }

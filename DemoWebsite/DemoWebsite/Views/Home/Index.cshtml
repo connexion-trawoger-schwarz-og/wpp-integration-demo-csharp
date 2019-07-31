@@ -5,9 +5,14 @@
 
 <h1>Payment Selection</h1>
 <div class="section-1">
-    <div class="content-wrap-centerd">
-        <h1>PaymentTest</h1>
-
+    <div>
+        <h2>Payment Page V2 Samples</h2>
+        <p class="information">
+            The following payment methods are implemented with the Wirecard Payment Page V2
+            Each payment uses the same gateway and JSON as payload format.<br />
+            <b>Important:</b>
+            The username / password and merchant-id change depending on the payment method.
+        </p>
         <ul>
             <li>
                 <a class="checkout-button-steps-button step" asp-action="CreditCard">CreditCard →</a>
@@ -27,5 +32,22 @@
             </li>
         </ul>
     </div>
-</div>
+    <div>
+        <h2>Elastic Payment Samples</h2>
+        <p class="information">
+            The following payment methods are implemented with the Wirecard Elastic Payment Gateway
+            Each payment uses the same gateway and XML as payload format.<br />
+            <b>Important:</b>
+            The username / password and merchant-id change depending on the payment method.
+        </p>
+        <ul>
+            <li>
+                <a class="checkout-button-steps-button step" asp-action="KlarnaEpp">Klarna EPP →</a>
+            </li>
+            <li>
+                <a class="checkout-button-steps-button step" asp-action="EpsEpp">EPS EPP →</a>
 
+            </li>
+        </ul>
+    </div>
+</div>

@@ -1,0 +1,39 @@
+{
+  "payment" : {
+    "transaction-id" : "fec447e1-2ddd-46e8-ad8b-22a20ca17880",
+    "request-id" : "a3525410-96db-4890-8442-d677855aa28b",
+    "transaction-state" : "success",
+    "completion-time-stamp" : "2019-07-31T11:26:44",
+    "requested-amount" : {
+      "currency" : "EUR",
+      "value" : 10.000000
+    },
+    "statuses" : {
+      "status" : [ {
+        "description" : "The resource was successfully created.",
+        "severity" : "information",
+        "code" : "201.0000"
+      } ]
+    },
+    "parent-transaction-id" : "12784d32-b39f-4322-b013-edcd932ae3e4",
+    "merchant-account-id" : {
+      "value" : "1f629760-1a66-4f83-a6b4-6a35620b4a6d"
+    },
+    "cancel-redirect-url" : "https://localhost:44372/home/Cancel",
+    "fail-redirect-url" : "https://localhost:44372/home/Error",
+    "success-redirect-url" : "https://localhost:44372/home/Success",
+    "account-holder" : {
+      "account-info" : { },
+      "last-name" : "Doe",
+      "first-name" : "John"
+    },
+    "payment-methods" : {
+      "payment-method" : [ {
+        "payload" : { },
+        "name" : "eps"
+      } ]
+    },
+    "transaction-type" : "debit",
+    "api-id" : "wpp"
+  }
+}

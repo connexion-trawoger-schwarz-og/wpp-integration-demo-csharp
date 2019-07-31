@@ -1,0 +1,57 @@
+{
+  "payment" : {
+    "parent-transaction-id" : "0a11452b-bdc9-4ee5-8b51-c01cc2cfff14",
+    "account-holder" : {
+      "first-name" : "Test",
+      "email" : "buyer@wirecard.com",
+      "last-name" : "Buyer",
+      "account-info" : { }
+    },
+    "payment-methods" : {
+      "payment-method" : [ {
+        "payload" : { },
+        "name" : "paypal"
+      } ]
+    },
+    "success-redirect-url" : "https://localhost:44372/home/Success",
+    "custom-fields" : {
+      "custom-field" : [ ]
+    },
+    "transaction-id" : "f248d4fa-5e61-411b-a73c-bb19847e26fa",
+    "request-id" : "3a60df14-6ea5-472e-9562-653f8663e0b3",
+    "transaction-state" : "success",
+    "completion-time-stamp" : "2019-07-31T11:43:30",
+    "requested-amount" : {
+      "currency" : "EUR",
+      "value" : 1.000000
+    },
+    "statuses" : {
+      "status" : [ {
+        "description" : "The resource was successfully created.",
+        "severity" : "information",
+        "code" : "201.0000",
+        "provider-transaction-id" : "O-6HW90974U09404227"
+      } ]
+    },
+    "transaction-type" : "order",
+    "merchant-account-id" : {
+      "value" : "9abf05c1-c266-46ae-8eac-7f87ca97af28"
+    },
+    "cancel-redirect-url" : "https://localhost:44372/home/Cancel",
+    "fail-redirect-url" : "https://localhost:44372/home/Error",
+    "shipping" : {
+      "first-name" : "John",
+      "last-name" : "Ho",
+      "phone" : "+49 49123123123",
+      "address" : {
+        "country" : "SG",
+        "street1" : "80 Pasir Panjang Road",
+        "postal-code" : "117372"
+      }
+    },
+    "api-id" : "wpp",
+    "wallet" : {
+      "account-id" : "B3XC9H53N9A3S"
+    }
+  }
+}

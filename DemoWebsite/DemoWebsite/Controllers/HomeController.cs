@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json.Linq;
 
 namespace DemoWebsite.Controllers
@@ -36,7 +37,8 @@ namespace DemoWebsite.Controllers
             var password = "ohysS0-dvfMx";
             var merchantAccountId = "7a6dd74f-06ab-4f3f-a864-adc52687270a";
             var requestId = Guid.NewGuid().ToString();
-
+            var paymentMethod = "creditcard";
+            
             var request = $@"{{
                   ""payment"": {{
                                 ""merchant-account-id"": {{
@@ -55,7 +57,7 @@ namespace DemoWebsite.Controllers
                     ""payment-methods"": {{
                                     ""payment-method"": [
                                       {{
-                          ""name"": ""creditcard""
+                          ""name"": ""{paymentMethod}""
                         }}
                       ]
                     }},
@@ -87,7 +89,7 @@ namespace DemoWebsite.Controllers
             var password = "qD2wzQ_hrc!8";
             var merchantAccountId = "9abf05c1-c266-46ae-8eac-7f87ca97af28";
             var requestId = Guid.NewGuid().ToString();
-
+            var paymentMethod = "paypal";
             var request = $@"{{
                   ""payment"": {{
                                 ""merchant-account-id"": {{
@@ -106,7 +108,7 @@ namespace DemoWebsite.Controllers
                     ""payment-methods"": {{
                                     ""payment-method"": [
                                       {{
-                          ""name"": ""paypal""
+                          ""name"": ""{paymentMethod}""
                         }}
                       ]
                     }},
@@ -133,6 +135,52 @@ namespace DemoWebsite.Controllers
             var password = "qD2wzQ_hrc!8";
             var requestId = Guid.NewGuid().ToString();
             var merchantAccountId = "adb45327-170a-460b-9810-9008e9772f5f";
+            var paymentMethod = "ideal";
+            
+            var request = $@"{{
+                  ""payment"": {{
+                                ""merchant-account-id"": {{
+                                    ""value"": ""{merchantAccountId}""
+                                }},
+                    ""request-id"": ""{requestId}"",
+                    ""transaction-type"": ""debit"",
+                    ""requested-amount"": {{
+                                    ""value"": 1.23,
+                      ""currency"": ""EUR""
+                    }},
+                    ""payment-methods"": {{
+                                    ""payment-method"": [
+                                      {{
+                          ""name"": ""{paymentMethod}""
+                        }}
+                      ]
+                    }},
+                    ""success-redirect-url"": ""{GetRedirecturl(nameof(Success))}"",
+                    ""fail-redirect-url"": ""{GetRedirecturl(nameof(Error))}"",
+                    ""cancel-redirect-url"": ""{GetRedirecturl(nameof(Cancel))}""
+                  }}
+                }}";
+
+
+            return await GetRedirectUrlFromWirecard(uri, username, password, request, RequestType.Json);
+
+        }
+
+        /// <summary>
+        /// Sofortüberweisung / Klarna
+        /// TestDaten: 
+        /// BIC: Deutschland / SFRTDE20XXX 
+        /// Kontonummer: 88888888
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> Klarna()
+        {
+            var uri = new Uri("https://wpp-test.wirecard.com/api/payment/register");
+            var username = "70000-APITEST-AP";
+            var password = "qD2wzQ_hrc!8";
+            var merchantAccountId = "f19d17a2-01ae-11e2-9085-005056a96a54";
+            var requestId = Guid.NewGuid().ToString();
+            var paymentMethod = "sofortbanking";
 
             var request = $@"{{
                   ""payment"": {{
@@ -148,10 +196,11 @@ namespace DemoWebsite.Controllers
                     ""payment-methods"": {{
                                     ""payment-method"": [
                                       {{
-                          ""name"": ""ideal""
+                          ""name"": ""{paymentMethod}""
                         }}
                       ]
                     }},
+                    ""descriptor"": ""test"",
                     ""success-redirect-url"": ""{GetRedirecturl(nameof(Success))}"",
                     ""fail-redirect-url"": ""{GetRedirecturl(nameof(Error))}"",
                     ""cancel-redirect-url"": ""{GetRedirecturl(nameof(Cancel))}""
@@ -160,9 +209,7 @@ namespace DemoWebsite.Controllers
 
 
             return await GetRedirectUrlFromWirecard(uri, username, password, request, RequestType.Json);
-
         }
-
 
         /// <summary>
         /// Sofortüberweisung / Klarna
@@ -171,7 +218,7 @@ namespace DemoWebsite.Controllers
         /// Kontonummer: 88888888
         /// </summary>
         /// <returns></returns>
-        public async Task<IActionResult> Klarna()
+        public async Task<IActionResult> KlarnaEpp()
         {
             var uri = new Uri("https://api-test.wirecard.com/engine/rest/paymentmethods");
             var username = "16390-testing";
@@ -189,12 +236,63 @@ namespace DemoWebsite.Controllers
                        <payment-method name=""sofortbanking"" />
                    </payment-methods>
                    <descriptor>FANZEE XRZ-1282</descriptor>
-                   <success-redirect-url>{GetRedirecturl(nameof(SuccessEpp))}</success-redirect-url>
+                   <success-redirect-url>{GetRedirecturl(nameof(Success))}</success-redirect-url>
                    <cancel-redirect-url>{GetRedirecturl(nameof(Cancel))}</cancel-redirect-url>
                 </payment>";
 
 
             return await GetRedirectUrlFromWirecard(uri, username, password, request, RequestType.Xml);
+        }
+
+        /// <summary>
+        /// EPS
+        /// Testdaten:
+        /// Bank: Ärzte- und Apotheker Bank BWFBATW1XXX
+        /// Just click to continue - no input needed.
+        /// </summary>
+        /// <returns></returns>
+
+        public async Task<IActionResult> Eps()
+        {
+
+            var uri = new Uri("https://wpp-test.wirecard.com/api/payment/register");
+            var username = "16390-testing";
+            var password = "3!3013=D3fD8X7";
+            var merchantAccountId = "1f629760-1a66-4f83-a6b4-6a35620b4a6d";
+            var requestId = Guid.NewGuid().ToString();
+            var paymentMethod = "eps";
+
+            var request = $@"{{
+                  ""payment"": {{
+                                ""merchant-account-id"": {{
+                                    ""value"": ""{merchantAccountId}""
+                                }},
+                    ""request-id"": ""{requestId}"",
+                    ""transaction-type"": ""debit"",
+                    ""requested-amount"": {{
+                        ""value"": 10,
+                        ""currency"": ""EUR""
+                    }},
+                    ""account-holder"": {{
+                        ""first-name"": ""John"",
+                        ""last-name"": ""Doe""
+                    }},
+                    ""payment-methods"": {{
+                                    ""payment-method"": [
+                                      {{
+                          ""name"": ""{paymentMethod}""
+                        }}
+                      ]
+                    }},
+                    ""success-redirect-url"": ""{GetRedirecturl(nameof(Success))}"",
+                    ""fail-redirect-url"": ""{GetRedirecturl(nameof(Error))}"",
+                    ""cancel-redirect-url"": ""{GetRedirecturl(nameof(Cancel))}""
+                  }}
+                }}";
+
+            return await GetRedirectUrlFromWirecard(uri, username, password, request, RequestType.Json);
+
+
         }
 
 
@@ -206,7 +304,7 @@ namespace DemoWebsite.Controllers
         /// </summary>
         /// <returns></returns>
 
-        public async Task<IActionResult> Eps()
+        public async Task<IActionResult> EpsEpp()
         {
             var uri = new Uri("https://api-test.wirecard.com/engine/rest/paymentmethods");
             var username = "16390-testing";
@@ -223,7 +321,7 @@ namespace DemoWebsite.Controllers
                      <payment-methods>
                         <payment-method name=""eps"" />
                     </payment-methods>
-                  <success-redirect-url>{GetRedirecturl(nameof(SuccessEpp))}</success-redirect-url>
+                  <success-redirect-url>{GetRedirecturl(nameof(Success))}</success-redirect-url>
                    <cancel-redirect-url>{GetRedirecturl(nameof(Cancel))}</cancel-redirect-url>
                     <fail-redirect-url>{GetRedirecturl(nameof(Error))}</fail-redirect-url>
                 </payment>";
@@ -258,7 +356,7 @@ namespace DemoWebsite.Controllers
                        <payment-method name=""sofortbanking"" />
                    </payment-methods>
                    <descriptor>FANZEE XRZ-1282</descriptor>
-                   <success-redirect-url>{redirecturl}/{nameof(SuccessEpp)}</success-redirect-url>
+                   <success-redirect-url>{redirecturl}/{nameof(Success)}</success-redirect-url>
                    <cancel-redirect-url>{redirecturl}/{nameof(Cancel)}</cancel-redirect-url>
                 </payment>";
 
@@ -292,20 +390,20 @@ namespace DemoWebsite.Controllers
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public string SuccessEpp(IFormCollection data)
-        {
+        //public string SuccessEpp(IFormCollection data)
+        //{
 
-            string type = data["psp_name"];
-            string custom_css_url = data["custom_css_url"];
-            string locale = data["locale"];
-            string responseBase64 = data["eppresponse"];
-            //psp_name, custom_css_url, eppresponse, locale
+        //    string type = data["psp_name"];
+        //    string custom_css_url = data["custom_css_url"];
+        //    string locale = data["locale"];
+        //    string responseBase64 = data["eppresponse"];
+        //    //psp_name, custom_css_url, eppresponse, locale
 
 
-            var response = Encoding.UTF8.GetString(Convert.FromBase64String(responseBase64));
+        //    var response = Encoding.UTF8.GetString(Convert.FromBase64String(responseBase64));
 
-            return string.Concat($"response:{response}");
-        }
+        //    return string.Concat($"response:{response}");
+        //}
 
         /// <summary>
         /// default response
@@ -314,17 +412,42 @@ namespace DemoWebsite.Controllers
         /// <returns></returns>
         public string Success(IFormCollection data)
         {
-            string signatureBase64 = data["response-signature-base64"];
-            string signatureAlgorithm = data["response-signature-altorithm"];
-            string responseBase64 = data["response-base64"];
-            //psp_name, custom_css_url, eppresponse, locale
 
 
-            var signature = Encoding.UTF8.GetString(Convert.FromBase64String(signatureBase64));
-            var response = Encoding.UTF8.GetString(Convert.FromBase64String(responseBase64));
+            if (data["eppresponse"] == StringValues.Empty)
+            {
 
-            return string.Concat($"signature:{signature}{Environment.NewLine}signatureAlgorithm:{signatureAlgorithm}{Environment.NewLine}response:{response}");
+                string signatureBase64 = data["response-signature-base64"];
+                string signatureAlgorithm = data["response-signature-altorithm"];
+                string responseBase64 = data["response-base64"];
+                var signature = Encoding.UTF8.GetString(Convert.FromBase64String(signatureBase64));
+                var response = DecodeResponse(signatureBase64, signatureAlgorithm, responseBase64);
+
+             
+
+                return string.Concat($"{response}");
+            }
+            else
+            {
+                string type = data["psp_name"];
+                string custom_css_url = data["custom_css_url"];
+                string locale = data["locale"];
+                string responseBase64 = data["eppresponse"];
+                string response = Encoding.UTF8.GetString(Convert.FromBase64String(responseBase64));
+                return string.Concat($"{response}");
+            }
+
+
+
+
         }
+
+        private string DecodeResponse(string signatureBase64, string signatureAlgorithm, string responseBase64)
+        {
+            var bytes = Convert.FromBase64String(responseBase64);
+            return Encoding.UTF8.GetString(bytes);
+        }
+            
         public async Task<IActionResult> Error()
         {
             return Content("Error");
@@ -390,12 +513,14 @@ namespace DemoWebsite.Controllers
 
         private string GetRedirecturl(string path)
         {
-            return string.Concat(Request.Scheme, "://", Request.Host, "/", "test", "/", path);
+            return string.Concat(Request.Scheme, "://", Request.Host, "/", "home", "/", path);
         }
 
-        enum RequestType
-        {
-            Json, Xml
-        }
+        
+    }
+
+    public enum RequestType
+    {
+        Json, Xml
     }
 }
