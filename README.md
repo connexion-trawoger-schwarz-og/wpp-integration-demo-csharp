@@ -1,5 +1,5 @@
 # wpp-integration-demo-csharp
-This application demonstrates how to use the Wirecard Payment Page in PHP code.
+This application demonstrates how to use the Wirecard Payment Page in C# (from php code)
 
 We're still working on more payment methods.
 
