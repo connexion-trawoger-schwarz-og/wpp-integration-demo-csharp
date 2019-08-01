@@ -104,41 +104,66 @@ namespace DemoWebsite.Controllers
 
         }
 
+        public IActionResult GooglePayStart()
+        {
+            return View();
+        }
+
+        
+
         /// <summary>
         /// Ealstic payment call for Google Pay / noch nicht komplett implementiert da Google Daten nötig sind (gleich wie bei Apple
         /// </summary>
         /// <returns></returns>
-        public async Task<IActionResult> GooglePay()
+        [HttpPost]
+        public async Task<IActionResult> GooglePay(GooglePaymentResponse data)
         {
-            var baseUri = new Uri("https://api-test.wirecard.com/engine/rest/");
+            
+
+            var uri = new Uri("https://api-test.wirecard.com/engine/rest/payments/");
             var username = "70000-APITEST-AP";
             var password = "qD2wzQ_hrc!8";
             var requestId = Guid.NewGuid().ToString();
             var redirecturl = string.Format("{0}://{1}{2}", Request.Scheme,
             Request.Host, "/checkout");
 
-            var request = $@"<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes""?>
-                <payment xmlns=""http://www.elastic-payments.com/schema/payment"">
-                   <merchant-account-id>3a3d15ec-197a-4958-890e-9843f86207ee</merchant-account-id>
-                       <request-id>{requestId}</request-id>
-                   <transaction-type>get-url</transaction-type>
-                   <requested-amount currency=""EUR"">1.01</requested-amount>
-                   <payment-methods>
-                       <payment-method name=""sofortbanking"" />
-                   </payment-methods>
-                   <descriptor>FANZEE XRZ-1282</descriptor>
-                   <success-redirect-url>{redirecturl}/{nameof(Success)}</success-redirect-url>
-                   <cancel-redirect-url>{redirecturl}/{nameof(Cancel)}</cancel-redirect-url>
+            var request = $@"<payment xmlns=""http://www.elastic-payments.com/schema/payment"">
+                  <merchant-account-id>9fcacb0d-b46a-4ce2-867b-6723687fdba1</merchant-account-id>
+                  <request-id>{requestId}</request-id>
+                  <transaction-type>authorization</transaction-type>
+                  <requested-amount currency=""EUR"">0.20</requested-amount>
+                  <account-holder>
+                    <first-name>John</first-name>
+                    <last-name>Doe</last-name>
+                    <email>tech.pdi-gw@wirecard.com</email>
+                    <address>
+                      <street1>Any Street</street1>
+                      <city>Toronto</city>
+                      <state>ON</state>
+                      <country>CA</country>
+                      <postal-code>M2H1C9</postal-code>
+                    </address>
+                  </account-holder>
+                  <card>
+                    <card-type>visa</card-type>
+                  </card>
+                   <cryptogram-value>eyJzaWduYXR1cmUiOiJNRVlDSVFDSVM0QVZRV2ZXTEFBbW56TVZsMXUwckViZnFIM3g0UDhXUVd6K1VrL3dJZ0loQUkvc3oyOHBqVTFBbmluRnlDVGVienAzcXI3ZGs2bXN1WHlZM1JyOCtGbW8iLCJwcm90b2NvbFZlcnNpb24iOiJFQ3YxIiwic2lnbmVkTWVzc2FnZSI6IntcImVuY3J5cHRlZE1lc3NhZ2VcIjpcIjl2RFVMS1JUMUpSWXRTWlZBbkRNR3VCNzJEUFVlb3pVQkJ6NDVmZ2J0bkdrTStRYTFYTThEanI2Q3BhNGxiWDlhOFczWTVhWXppYkNBRWhUWUNuakNLVXV0clp3bHNPYmpNUXJ6a0dPTWhobENkcnU2alFzMnp3ODZCaTVvNkFISThycVg3RFMrcUpSZk9XRmJEM2dHQ1VZVjdBUURUenQveCtNOFkzUkpOeFdIYUdIVE5DNDQ1OHowZHgra2VLWWF6YkJXUWpldXE0bnIzbmdQUkVFa1lXeTN3TFFYb3JjYzZRTUZIa2xJazJ1YzExa2ttWllKRksyU2tGbDQ4SDZ1aGdUeG8ycEJrWkVlR2EyUjVRTjc0NDJ2VHZ4bGxJQW9NMkc3UkNFNmlxODNQSzlaaUNtWURoYXBHaTI0NnpPRG56Z0tiMlFvSXVWS2wrZFRydUowdzdVRkJpRTBFZ3lWVU1iY1JmcjFQaWJtNThHaFhFRU9JTWV6OE55S0s1dFBmdFkwMmRiV3ZpNVFtRisyK2diUFA1Z1h2eCtJRTN1ZVJobGJYOWFmUFo5M1JRVmxKUFkvcWtMYkVIaW1tSkFRVW9HU1lrZTRlSEdRSE9ib2tDaU5WQlg3dTRsVEIzUmNhY1FiNlJ3bGdcXHUwMDNkXFx1MDAzZFwiLFwiZXBoZW1lcmFsUHVibGljS2V5XCI6XCJCSnNaYWdTclowNFl4SmhMbTNhNkhST3dWdkJYRnFnc1NETlc4eEZqU2E1NithdGVHb0l6NHdYc3VFamh2VDllMWNkL2k5VXJqT0t4cEpXUTZzQ0czdGtcXHUwMDNkXCIsXCJ0YWdcIjpcIngxNkU5Y3U1UTZscUhlMENzL0FtZ3drMzcxeGZNZWNsZXAwak5jRWtIeFlcXHUwMDNkXCJ9In0=</cryptogram-value>
+                    <cryptogram-type>google-pay</cryptogram-type>
+                  </cryptogram>
+                  <ip-address>127.0.0.1</ip-address>
+                  <entry-mode>mcommerce</entry-mode>
+                  <payment-methods>
+                    <payment-method name=""creditcard""/>
+                  </payment-methods>
                 </payment>";
 
 
 
             var client = new HttpClient();
-            client.BaseAddress = baseUri;
-
+            
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
             "Basic", Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes($"{username}:{password}")));
-            var response = await client.PostAsync("paymentmethods", new StringContent(request, Encoding.UTF8, "application/xml"));
+            var response = await client.PostAsync(uri, new StringContent(request, Encoding.UTF8, "application/xml"));
 
             var responseData = await response.Content.ReadAsStringAsync();
             var responseItem = XDocument.Parse(responseData);
@@ -567,5 +592,30 @@ namespace DemoWebsite.Controllers
         #endregion
     }
 
+    public class GooglePaymentResponse
+    {
+        public int ApiVersionMinor { get; set; }
+        public int ApiVersion { get; set; }
+        public PaymentMethodData PaymentMethodData { get; set; }
+    }
 
+    public class PaymentMethodData
+    {
+        public string Description { get; set; }
+        public TokenizationData TokenizationData { get; set; }
+        public string Type { get; set; }
+        public Info Info { get; set; }
+    }
+
+    public class Info
+    {
+        public string CardNetwork { get; set; }
+        public string CardDetails { get; set; }
+    }
+
+    public class TokenizationData
+    {
+        public string Type { get; set; }
+        public string Token { get; set; }
+    }
 }
