@@ -14,8 +14,14 @@ using System.Xml.Linq;
 
 namespace DemoWebsite.Controllers
 {
+    /// <summary>
+    /// startup controller
+    /// </summary>
     public class HomeController : Controller
     {
+        /// <summary>
+        /// injected wirecard payment service
+        /// </summary>
         private readonly WirecardPaymentService _wirecardPaymentService;
 
         public HomeController(WirecardPaymentService wirecardPaymentService)
@@ -32,41 +38,21 @@ namespace DemoWebsite.Controllers
             return View();
         }
 
+        /// <summary>
+        /// the new payment action
+        /// the fragmented calls below are refactored to the wirecard payment service
+        /// </summary>
+        /// <param name="endpointName">querystring parameter</param>
+        /// <param name="paymentName">querystring parameter</param>
+        /// Testdata:
+        /// creditcard: cardNr.: 4200000000000018, CVC: 018, validTo: 01/23
+        /// paypal:  email: buyer @wirecard.com, password: Einstein35
+        /// iDeal: bank: Rabobank RABONL2U -or-  ING INGBNL2A
+        /// sofortbanking: country: Deutschland, BIC: SFRTDE20XXX, accountNr.: 88888888
+        /// <returns></returns>
         public async Task<IActionResult> Payment(string endpointName, string paymentName)
         {
-            //var endpoint = _wirecardConfig.FirstOrDefault(e => e.Name.Equals(endpointName, StringComparison.OrdinalIgnoreCase));
-            //var payment = endpoint.PaymentMethods.FirstOrDefault(p => p.Name.Equals(paymentName, StringComparison.OrdinalIgnoreCase));
-
-            //var requestId = Guid.NewGuid().ToString();
-
-            //var payload = $@"{{
-            //      ""payment"": {{
-            //                    ""merchant-account-id"": {{
-            //                        ""value"": ""{payment.MerchantAccountId}""
-            //                    }},
-            //        ""request-id"": ""{requestId}"",
-            //        ""transaction-type"": ""authorization"",
-            //        ""requested-amount"": {{
-            //                        ""value"": 10,
-            //          ""currency"": ""EUR""
-            //        }},
-            //        ""account-holder"": {{
-            //                        ""first-name"": ""John"",
-            //          ""last-name"": ""Doe""
-            //        }},
-            //        ""payment-methods"": {{
-            //                        ""payment-method"": [
-            //                          {{
-            //              ""name"": ""{payment.Name}""
-            //            }}
-            //          ]
-            //        }},
-            //        ""success-redirect-url"": ""{GetRedirecturl(nameof(endpoint.SuccessRedirectUrl))}"",
-            //        ""cancel-redirect-url"": ""{GetRedirecturl(nameof(endpoint.CancelRedirectUrl))}"",
-            //        ""fail-redirect-url"": ""{GetRedirecturl(nameof(endpoint.FailRedirectUrl))}""
-            //      }}
-            //    }}";
-
+            // setup for demo payment call
             var paymentInfo = new PaymentInfo
             {
                 AccountHolder = new AccountHolder { FirstName = "John", LastName = "Doe" },
@@ -74,19 +60,177 @@ namespace DemoWebsite.Controllers
                 RequestId = Guid.NewGuid().ToString(),
                 PaymentName = paymentName,
                 EndpointName = endpointName
-
-
             };
 
             return Redirect(await _wirecardPaymentService.GetRedirectUrlFromWirecard(paymentInfo));
         }
 
+
+
         /// <summary>
-        /// Kreditkarten
+        /// elastic payment call for EPS
+        /// Testdaten:
+        /// Bank: Ärzte- und Apotheker Bank BWFBATW1XXX
+        /// Just click to continue - no input needed.
+        /// </summary>
+        /// <returns></returns>
+
+        public async Task<IActionResult> EpsEpp()
+        {
+            var uri = new Uri("https://api-test.wirecard.com/engine/rest/paymentmethods");
+            var username = "16390-testing";
+            var password = "3!3013=D3fD8X7";
+            var merchantAccountId = "1f629760-1a66-4f83-a6b4-6a35620b4a6d";
+            var requestId = Guid.NewGuid().ToString();
+
+            var request = $@"<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes""?>
+                <payment xmlns=""http://www.elastic-payments.com/schema/payment"">
+                   <merchant-account-id>{merchantAccountId}</merchant-account-id>
+                       <request-id>{requestId}</request-id>
+                   <transaction-type>get-url</transaction-type>
+                   <requested-amount currency=""EUR"">1.99</requested-amount>
+                     <payment-methods>
+                        <payment-method name=""eps"" />
+                    </payment-methods>
+                  <success-redirect-url>{GetRedirecturl(nameof(Success))}</success-redirect-url>
+                   <cancel-redirect-url>{GetRedirecturl(nameof(Cancel))}</cancel-redirect-url>
+                    <fail-redirect-url>{GetRedirecturl(nameof(Error))}</fail-redirect-url>
+                </payment>";
+
+
+            return await GetRedirectUrlFromWirecard(uri, username, password, request, RequestType.Xml);
+
+
+
+        }
+
+        /// <summary>
+        /// Ealstic payment call for Google Pay / noch nicht komplett implementiert da Google Daten nötig sind (gleich wie bei Apple
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> GooglePay()
+        {
+            var baseUri = new Uri("https://api-test.wirecard.com/engine/rest/");
+            var username = "70000-APITEST-AP";
+            var password = "qD2wzQ_hrc!8";
+            var requestId = Guid.NewGuid().ToString();
+            var redirecturl = string.Format("{0}://{1}{2}", Request.Scheme,
+            Request.Host, "/checkout");
+
+            var request = $@"<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes""?>
+                <payment xmlns=""http://www.elastic-payments.com/schema/payment"">
+                   <merchant-account-id>3a3d15ec-197a-4958-890e-9843f86207ee</merchant-account-id>
+                       <request-id>{requestId}</request-id>
+                   <transaction-type>get-url</transaction-type>
+                   <requested-amount currency=""EUR"">1.01</requested-amount>
+                   <payment-methods>
+                       <payment-method name=""sofortbanking"" />
+                   </payment-methods>
+                   <descriptor>FANZEE XRZ-1282</descriptor>
+                   <success-redirect-url>{redirecturl}/{nameof(Success)}</success-redirect-url>
+                   <cancel-redirect-url>{redirecturl}/{nameof(Cancel)}</cancel-redirect-url>
+                </payment>";
+
+
+
+            var client = new HttpClient();
+            client.BaseAddress = baseUri;
+
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+            "Basic", Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes($"{username}:{password}")));
+            var response = await client.PostAsync("paymentmethods", new StringContent(request, Encoding.UTF8, "application/xml"));
+
+            var responseData = await response.Content.ReadAsStringAsync();
+            var responseItem = XDocument.Parse(responseData);
+            XNamespace ns = "http://www.elastic-payments.com/schema/payment";
+
+            var redirect = responseItem.Root
+                .Element(ns + "payment-methods")
+                .Element(ns + "payment-method")
+                .Attribute("url").Value;
+
+            return Redirect(redirect);
+
+
+        }
+
+        /// <summary>
+        /// payment response action
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public string Success(IFormCollection data)
+        {
+            // data from elastc payment
+            if (data["eppresponse"] == StringValues.Empty)
+            {
+
+                string signatureBase64 = data["response-signature-base64"];
+                string signatureAlgorithm = data["response-signature-altorithm"];
+                string responseBase64 = data["response-base64"];
+                var signature = Encoding.UTF8.GetString(Convert.FromBase64String(signatureBase64));
+                var response = DecodeResponse(signatureBase64, signatureAlgorithm, responseBase64);
+
+
+
+                return $"{response}";
+            }
+            // data from wirecard REST
+            else
+            {
+                string type = data["psp_name"];
+                string custom_css_url = data["custom_css_url"];
+                string locale = data["locale"];
+                string responseBase64 = data["eppresponse"];
+                string response = Encoding.UTF8.GetString(Convert.FromBase64String(responseBase64));
+                return $"{response}";
+            }
+
+
+
+
+        }
+
+        /// <summary>
+        /// decode wirecard response data
+        /// </summary>
+        /// <param name="signatureBase64"></param>
+        /// <param name="signatureAlgorithm"></param>
+        /// <param name="responseBase64"></param>
+        /// <returns></returns>
+        private string DecodeResponse(string signatureBase64, string signatureAlgorithm, string responseBase64)
+        {
+            var bytes = Convert.FromBase64String(responseBase64);
+            return Encoding.UTF8.GetString(bytes);
+        }
+
+        /// <summary>
+        /// error response redirect
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Error()
+        {
+            return Content("Error");
+        }
+
+        /// <summary>
+        /// cancel response redirect
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Cancel()
+        {
+            return Content("Cancel");
+        }
+
+        #region obsolte / old calls
+
+        /// <summary>
+        /// legacy call for credit card payment
         /// Testdaten: 
         /// Nr: 4200000000000018, CVC 018, validTo: 01/23
         /// </summary>
         /// <returns></returns>
+        [Obsolete]
         public async Task<IActionResult> CreditCard()
         {
             var uri = new Uri("https://wpp-test.wirecard.com/api/payment/register");
@@ -128,17 +272,14 @@ namespace DemoWebsite.Controllers
 
         }
 
-
-
-
-
         /// <summary>
-        ///Paypal
+        ///legacy call for paypal
         /// Testdaten:
         /// Email buyer @wirecard.com
         /// Password Einstein35
         /// </summary>
         /// <returns></returns>
+        [Obsolete]
         public async Task<IActionResult> PayPal()
         {
             var uri = new Uri("https://wpp-test.wirecard.com/api/payment/register");
@@ -179,12 +320,13 @@ namespace DemoWebsite.Controllers
         }
 
         /// <summary>
-        /// IDeal
+        /// legacy call for IDeal
         /// Testdaten:
         /// Rabobank RABONL2U
         /// ING INGBNL2A
         /// </summary>
         /// <returns></returns>
+        [Obsolete]
         public async Task<IActionResult> IDeal()
         {
             var uri = new Uri("https://wpp-test.wirecard.com/api/payment/register");
@@ -224,7 +366,7 @@ namespace DemoWebsite.Controllers
         }
 
         /// <summary>
-        /// Sofortüberweisung / Klarna
+        /// legacy call for Sofortüberweisung / Klarna
         /// TestDaten: 
         /// BIC: Deutschland / SFRTDE20XXX 
         /// Kontonummer: 88888888
@@ -269,7 +411,7 @@ namespace DemoWebsite.Controllers
         }
 
         /// <summary>
-        /// Sofortüberweisung / Klarna
+        /// elastic payment call for Sofortüberweisung / Klarna
         /// TestDaten: 
         /// BIC: Deutschland / SFRTDE20XXX 
         /// Kontonummer: 88888888
@@ -302,7 +444,7 @@ namespace DemoWebsite.Controllers
         }
 
         /// <summary>
-        /// EPS
+        /// legacy call for EPS
         /// Testdaten:
         /// Bank: Ärzte- und Apotheker Bank BWFBATW1XXX
         /// Just click to continue - no input needed.
@@ -354,166 +496,15 @@ namespace DemoWebsite.Controllers
 
 
         /// <summary>
-        /// EPS
-        /// Testdaten:
-        /// Bank: Ärzte- und Apotheker Bank BWFBATW1XXX
-        /// Just click to continue - no input needed.
+        /// legacy method for getting url from wirecard
         /// </summary>
+        /// <param name="uri"></param>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <param name="payload"></param>
+        /// <param name="requestType"></param>
         /// <returns></returns>
-
-        public async Task<IActionResult> EpsEpp()
-        {
-            var uri = new Uri("https://api-test.wirecard.com/engine/rest/paymentmethods");
-            var username = "16390-testing";
-            var password = "3!3013=D3fD8X7";
-            var merchantAccountId = "1f629760-1a66-4f83-a6b4-6a35620b4a6d";
-            var requestId = Guid.NewGuid().ToString();
-
-            var request = $@"<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes""?>
-                <payment xmlns=""http://www.elastic-payments.com/schema/payment"">
-                   <merchant-account-id>{merchantAccountId}</merchant-account-id>
-                       <request-id>{requestId}</request-id>
-                   <transaction-type>get-url</transaction-type>
-                   <requested-amount currency=""EUR"">1.99</requested-amount>
-                     <payment-methods>
-                        <payment-method name=""eps"" />
-                    </payment-methods>
-                  <success-redirect-url>{GetRedirecturl(nameof(Success))}</success-redirect-url>
-                   <cancel-redirect-url>{GetRedirecturl(nameof(Cancel))}</cancel-redirect-url>
-                    <fail-redirect-url>{GetRedirecturl(nameof(Error))}</fail-redirect-url>
-                </payment>";
-
-
-            return await GetRedirectUrlFromWirecard(uri, username, password, request, RequestType.Xml);
-
-
-
-        }
-
-        /// <summary>
-        /// Google Pay / noch nicht komplett implementiert da Google Daten nötig sind (gleich wie bei Apple
-        /// </summary>
-        /// <returns></returns>
-        public async Task<IActionResult> GooglePay()
-        {
-            var baseUri = new Uri("https://api-test.wirecard.com/engine/rest/");
-            var username = "70000-APITEST-AP";
-            var password = "qD2wzQ_hrc!8";
-            var requestId = Guid.NewGuid().ToString();
-            var redirecturl = string.Format("{0}://{1}{2}", Request.Scheme,
-            Request.Host, "/checkout");
-
-            var request = $@"<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes""?>
-                <payment xmlns=""http://www.elastic-payments.com/schema/payment"">
-                   <merchant-account-id>3a3d15ec-197a-4958-890e-9843f86207ee</merchant-account-id>
-                       <request-id>{requestId}</request-id>
-                   <transaction-type>get-url</transaction-type>
-                   <requested-amount currency=""EUR"">1.01</requested-amount>
-                   <payment-methods>
-                       <payment-method name=""sofortbanking"" />
-                   </payment-methods>
-                   <descriptor>FANZEE XRZ-1282</descriptor>
-                   <success-redirect-url>{redirecturl}/{nameof(Success)}</success-redirect-url>
-                   <cancel-redirect-url>{redirecturl}/{nameof(Cancel)}</cancel-redirect-url>
-                </payment>";
-
-
-
-            var client = new HttpClient();
-            client.BaseAddress = baseUri;
-
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
-            "Basic", Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes($"{username}:{password}")));
-            var response = await client.PostAsync("paymentmethods", new StringContent(request, Encoding.UTF8, "application/xml"));
-
-            var responseData = await response.Content.ReadAsStringAsync();
-            var responseItem = XDocument.Parse(responseData);
-            XNamespace ns = "http://www.elastic-payments.com/schema/payment";
-
-            var redirect = responseItem.Root
-                .Element(ns + "payment-methods")
-                .Element(ns + "payment-method")
-                .Attribute("url").Value;
-
-            return Redirect(redirect);
-
-
-        }
-
-
-
-        /// <summary>
-        /// response for elastic paymentes
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        //public string SuccessEpp(IFormCollection data)
-        //{
-
-        //    string type = data["psp_name"];
-        //    string custom_css_url = data["custom_css_url"];
-        //    string locale = data["locale"];
-        //    string responseBase64 = data["eppresponse"];
-        //    //psp_name, custom_css_url, eppresponse, locale
-
-
-        //    var response = Encoding.UTF8.GetString(Convert.FromBase64String(responseBase64));
-
-        //    return string.Concat($"response:{response}");
-        //}
-
-        /// <summary>
-        /// default response
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public string Success(IFormCollection data)
-        {
-
-
-            if (data["eppresponse"] == StringValues.Empty)
-            {
-
-                string signatureBase64 = data["response-signature-base64"];
-                string signatureAlgorithm = data["response-signature-altorithm"];
-                string responseBase64 = data["response-base64"];
-                var signature = Encoding.UTF8.GetString(Convert.FromBase64String(signatureBase64));
-                var response = DecodeResponse(signatureBase64, signatureAlgorithm, responseBase64);
-
-
-
-                return $"{response}";
-            }
-            else
-            {
-                string type = data["psp_name"];
-                string custom_css_url = data["custom_css_url"];
-                string locale = data["locale"];
-                string responseBase64 = data["eppresponse"];
-                string response = Encoding.UTF8.GetString(Convert.FromBase64String(responseBase64));
-                return $"{response}";
-            }
-
-
-
-
-        }
-
-        private string DecodeResponse(string signatureBase64, string signatureAlgorithm, string responseBase64)
-        {
-            var bytes = Convert.FromBase64String(responseBase64);
-            return Encoding.UTF8.GetString(bytes);
-        }
-
-        public async Task<IActionResult> Error()
-        {
-            return Content("Error");
-        }
-        public async Task<IActionResult> Cancel()
-        {
-            return Content("Cancel");
-        }
-
+        [Obsolete]
         private async Task<IActionResult> GetRedirectUrlFromWirecard(Uri uri, string username, string password, string payload, RequestType requestType)
         {
             var client = new HttpClient();
@@ -539,7 +530,7 @@ namespace DemoWebsite.Controllers
                 return await CreateRedirectUrlXml(response);
             }
         }
-
+        [Obsolete]
         private async Task<IActionResult> CreateRedirectUrl(HttpResponseMessage httpResponseMessage)
         {
             var responseData = await httpResponseMessage.Content.ReadAsStringAsync();
@@ -547,7 +538,7 @@ namespace DemoWebsite.Controllers
             var redirect = json.Value<string>("payment-redirect-url");
             return Redirect(redirect);
         }
-
+        [Obsolete]
         private async Task<IActionResult> CreateRedirectUrlXml(HttpResponseMessage httpResponseMessage)
         {
             var responseData = await httpResponseMessage.Content.ReadAsStringAsync();
@@ -561,19 +552,19 @@ namespace DemoWebsite.Controllers
 
             return Redirect(redirect);
         }
-
+        [Obsolete]
         private AuthenticationHeaderValue CreateAuthenticationHeader(string username, string password)
         {
             return new AuthenticationHeaderValue(
             "Basic", Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes($"{username}:{password}")));
         }
-
+        [Obsolete]
         private string GetRedirecturl(string path)
         {
             return string.Concat(Request.Scheme, "://", Request.Host, "/", "home", "/", path);
         }
 
-
+        #endregion
     }
 
 
