@@ -6,8 +6,11 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using DemoWebsite.Models;
+using DemoWebsite.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json.Linq;
 
@@ -15,6 +18,13 @@ namespace DemoWebsite.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly WirecardPaymentService _wirecardPaymentService;
+
+        public HomeController(WirecardPaymentService wirecardPaymentService)
+        {
+            _wirecardPaymentService = wirecardPaymentService;
+        }
+
         /// <summary>
         /// payment selection view
         /// </summary>
@@ -22,6 +32,54 @@ namespace DemoWebsite.Controllers
         public IActionResult Index()
         {
             return View();
+        }
+
+        public async Task<IActionResult> Payment(string endpointName, string paymentName)
+        {
+            //var endpoint = _wirecardConfig.FirstOrDefault(e => e.Name.Equals(endpointName, StringComparison.OrdinalIgnoreCase));
+            //var payment = endpoint.PaymentMethods.FirstOrDefault(p => p.Name.Equals(paymentName, StringComparison.OrdinalIgnoreCase));
+
+            //var requestId = Guid.NewGuid().ToString();
+
+            //var payload = $@"{{
+            //      ""payment"": {{
+            //                    ""merchant-account-id"": {{
+            //                        ""value"": ""{payment.MerchantAccountId}""
+            //                    }},
+            //        ""request-id"": ""{requestId}"",
+            //        ""transaction-type"": ""authorization"",
+            //        ""requested-amount"": {{
+            //                        ""value"": 10,
+            //          ""currency"": ""EUR""
+            //        }},
+            //        ""account-holder"": {{
+            //                        ""first-name"": ""John"",
+            //          ""last-name"": ""Doe""
+            //        }},
+            //        ""payment-methods"": {{
+            //                        ""payment-method"": [
+            //                          {{
+            //              ""name"": ""{payment.Name}""
+            //            }}
+            //          ]
+            //        }},
+            //        ""success-redirect-url"": ""{GetRedirecturl(nameof(endpoint.SuccessRedirectUrl))}"",
+            //        ""cancel-redirect-url"": ""{GetRedirecturl(nameof(endpoint.CancelRedirectUrl))}"",
+            //        ""fail-redirect-url"": ""{GetRedirecturl(nameof(endpoint.FailRedirectUrl))}""
+            //      }}
+            //    }}";
+
+            var paymentInfo = new PaymentInfo {
+                AccountHolder = new AccountHolder { FirstName="John", LastName ="Doe" },
+                RequestedAmount = new RequestedAmount { Currency = Currency.EUR, Value=1.23m },
+                RequestId = Guid.NewGuid().ToString(),
+                PaymentName = paymentName,
+                EndpointName = endpointName
+                
+
+        };
+
+            return Redirect(await _wirecardPaymentService.GetRedirectUrlFromWirecard(paymentInfo));
         }
 
         /// <summary>
@@ -38,7 +96,7 @@ namespace DemoWebsite.Controllers
             var merchantAccountId = "7a6dd74f-06ab-4f3f-a864-adc52687270a";
             var requestId = Guid.NewGuid().ToString();
             var paymentMethod = "creditcard";
-            
+
             var request = $@"{{
                   ""payment"": {{
                                 ""merchant-account-id"": {{
@@ -136,7 +194,7 @@ namespace DemoWebsite.Controllers
             var requestId = Guid.NewGuid().ToString();
             var merchantAccountId = "adb45327-170a-460b-9810-9008e9772f5f";
             var paymentMethod = "ideal";
-            
+
             var request = $@"{{
                   ""payment"": {{
                                 ""merchant-account-id"": {{
@@ -423,9 +481,9 @@ namespace DemoWebsite.Controllers
                 var signature = Encoding.UTF8.GetString(Convert.FromBase64String(signatureBase64));
                 var response = DecodeResponse(signatureBase64, signatureAlgorithm, responseBase64);
 
-             
 
-                return string.Concat($"{response}");
+
+                return $"{response}";
             }
             else
             {
@@ -434,7 +492,7 @@ namespace DemoWebsite.Controllers
                 string locale = data["locale"];
                 string responseBase64 = data["eppresponse"];
                 string response = Encoding.UTF8.GetString(Convert.FromBase64String(responseBase64));
-                return string.Concat($"{response}");
+                return $"{response}";
             }
 
 
@@ -447,7 +505,7 @@ namespace DemoWebsite.Controllers
             var bytes = Convert.FromBase64String(responseBase64);
             return Encoding.UTF8.GetString(bytes);
         }
-            
+
         public async Task<IActionResult> Error()
         {
             return Content("Error");
@@ -516,11 +574,8 @@ namespace DemoWebsite.Controllers
             return string.Concat(Request.Scheme, "://", Request.Host, "/", "home", "/", path);
         }
 
-        
+
     }
 
-    public enum RequestType
-    {
-        Json, Xml
-    }
+   
 }

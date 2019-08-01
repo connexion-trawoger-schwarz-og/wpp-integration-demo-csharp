@@ -15,21 +15,37 @@
         </p>
         <ul>
             <li>
-                <a class="checkout-button-steps-button step" asp-action="CreditCard">CreditCard →</a>
+                <a class="checkout-button-steps-button step" asp-action="Payment" asp-route-endpointName="PaymentPageV2" asp-route-paymentName="creditcard">CreditCard →</a>
             </li>
             <li>
-                <a class="checkout-button-steps-button step" asp-action="PayPal">PayPal →</a>
+                <a class="checkout-button-steps-button step" asp-action="Payment" asp-route-endpointName="PaymentPageV2" asp-route-paymentName="paypal">PayPal →</a>
             </li>
             <li>
-                <a class="checkout-button-steps-button step" asp-action="IDeal">IDeal →</a>
+                <a class="checkout-button-steps-button step" asp-action="Payment" asp-route-endpointName="PaymentPageV2" asp-route-paymentName="ideal">IDeal →</a>
             </li>
             <li>
-                <a class="checkout-button-steps-button step" asp-action="Klarna">Klarna →</a>
+                <a class="checkout-button-steps-button step" asp-action="Payment" asp-route-endpointName="PaymentPageV2" asp-route-paymentName="sofortbanking">Klarna →</a>
             </li>
             <li>
-                <a class="checkout-button-steps-button step" asp-action="Eps">EPS →</a>
+                <a class="checkout-button-steps-button step" asp-action="Payment" asp-route-endpointName="PaymentPageV2" asp-route-paymentName="eps">EPS →</a>
 
             </li>
+            @*<li>
+            <a class="checkout-button-steps-button step" asp-action="CreditCard">CreditCard →</a>
+        </li>
+        <li>
+            <a class="checkout-button-steps-button step" asp-action="PayPal">PayPal →</a>
+        </li>
+        <li>
+            <a class="checkout-button-steps-button step" asp-action="IDeal">IDeal →</a>
+        </li>
+        <li>
+            <a class="checkout-button-steps-button step" asp-action="Klarna">Klarna →</a>
+        </li>
+        <li>
+            <a class="checkout-button-steps-button step" asp-action="Eps">EPS →</a>
+
+        </li>*@
         </ul>
     </div>
     <div>

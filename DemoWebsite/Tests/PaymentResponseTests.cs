@@ -1,4 +1,5 @@
 using DemoWebsite.Controllers;
+using DemoWebsite.Models;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using System;
