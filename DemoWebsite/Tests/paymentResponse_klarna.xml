@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright (c) 2019 connexion OG / Roman Wienicke
+-->
 <payment xmlns="http://www.elastic-payments.com/schema/payment">
   <merchant-account-id>6c0e7efd-ee58-40f7-9bbd-5e7337a052cd</merchant-account-id>
   <transaction-id>fde9526b-0c28-49da-941b-0c67b1839107</transaction-id>

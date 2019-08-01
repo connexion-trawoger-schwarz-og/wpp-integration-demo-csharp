@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿// Copyright (c) 2019 connexion OG / Roman Wienicke
+using Newtonsoft.Json;
 using System.IO;
 using System.Xml.Linq;
 using System.Xml.Serialization;

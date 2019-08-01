@@ -1,4 +1,5 @@
-﻿using DemoWebsite.Controllers;
+﻿// Copyright (c) 2019 connexion OG / Roman Wienicke
+using DemoWebsite.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;

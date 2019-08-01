@@ -1,4 +1,5 @@
-﻿using DemoWebsite.Models;
+﻿// Copyright (c) 2019 connexion OG / Roman Wienicke
+using DemoWebsite.Models;
 
 namespace DemoWebsite.Models
 {

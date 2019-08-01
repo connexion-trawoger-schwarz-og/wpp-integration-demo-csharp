@@ -1,3 +1,4 @@
+// Copyright (c) 2019 connexion OG / Roman Wienicke
 using DemoWebsite.Controllers;
 using DemoWebsite.Models;
 using Newtonsoft.Json.Linq;
