@@ -147,6 +147,6 @@ namespace DemoWebsite.Models
         /// </summary>
         [JsonProperty(PropertyName = "descriptor")]
         public string Descriptor { get; set; }
-        
+
     }
 }

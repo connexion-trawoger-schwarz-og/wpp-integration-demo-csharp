@@ -1,19 +1,16 @@
 ﻿// Copyright (c) 2019 connexion OG / Roman Wienicke
+using DemoWebsite.Models;
+using DemoWebsite.Services;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using DemoWebsite.Models;
-using DemoWebsite.Services;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
-using Newtonsoft.Json.Linq;
 
 namespace DemoWebsite.Controllers
 {
@@ -70,15 +67,16 @@ namespace DemoWebsite.Controllers
             //      }}
             //    }}";
 
-            var paymentInfo = new PaymentInfo {
-                AccountHolder = new AccountHolder { FirstName="John", LastName ="Doe" },
-                RequestedAmount = new RequestedAmount { Currency = Currency.EUR, Value=1.23m },
+            var paymentInfo = new PaymentInfo
+            {
+                AccountHolder = new AccountHolder { FirstName = "John", LastName = "Doe" },
+                RequestedAmount = new RequestedAmount { Currency = Currency.EUR, Value = 1.23m },
                 RequestId = Guid.NewGuid().ToString(),
                 PaymentName = paymentName,
                 EndpointName = endpointName
-                
 
-        };
+
+            };
 
             return Redirect(await _wirecardPaymentService.GetRedirectUrlFromWirecard(paymentInfo));
         }
@@ -578,5 +576,5 @@ namespace DemoWebsite.Controllers
 
     }
 
-   
+
 }

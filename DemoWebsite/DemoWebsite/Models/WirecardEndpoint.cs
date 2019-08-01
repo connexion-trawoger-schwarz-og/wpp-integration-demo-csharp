@@ -8,7 +8,8 @@ namespace DemoWebsite.Models
     /// <summary>
     /// the endpoint for the wirecard request
     /// </summary>
-    public class WirecardEndpoint {
+    public class WirecardEndpoint
+    {
         /// <summary>
         /// name of the endpoint
         /// </summary>
@@ -46,7 +47,7 @@ namespace DemoWebsite.Models
         /// </summary>
         public HashSet<WirecardPayment> PaymentMethods { get; set; }
     }
-       
 
-   
+
+
 }

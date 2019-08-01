@@ -5,9 +5,6 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -120,7 +117,7 @@ namespace DemoWebsite.Services
             // create json string form payload class
             var data = JsonConvert.SerializeObject(payload, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
             return data;
-            
+
         }
 
         // get the redirect url
@@ -183,5 +180,5 @@ namespace DemoWebsite.Services
 
     }
 
-   
+
 }

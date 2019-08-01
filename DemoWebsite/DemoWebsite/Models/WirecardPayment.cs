@@ -34,8 +34,8 @@ namespace DemoWebsite.Models
         /// </summary>
         public TransactionType DefaultTransactionType { get; set; }
 
-    }     
-       
+    }
 
-   
+
+
 }

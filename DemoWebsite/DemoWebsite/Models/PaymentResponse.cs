@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2019 connexion OG / Roman Wienicke
 using Newtonsoft.Json;
-using System.IO;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 
@@ -26,7 +25,7 @@ namespace DemoWebsite.Models
 
             var doc = XDocument.Parse(response);
             XmlSerializer xmlSerializer = new XmlSerializer(typeof(Payment));
-            
+
             using (var reader = doc.CreateReader())
             {
                 return new PaymentResponse { Payment = (Payment)xmlSerializer.Deserialize(reader) };

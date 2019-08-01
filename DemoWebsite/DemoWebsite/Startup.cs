@@ -1,9 +1,4 @@
 ﻿// Copyright (c) 2019 connexion OG / Roman Wienicke
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
 using DemoWebsite.Models;
 using DemoWebsite.Services;
 using Microsoft.AspNetCore.Builder;
@@ -13,6 +8,9 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
 
 namespace DemoWebsite
 {
