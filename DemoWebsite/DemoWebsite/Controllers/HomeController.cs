@@ -4,6 +4,7 @@ using DemoWebsite.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Net.Http;
@@ -55,11 +56,31 @@ namespace DemoWebsite.Controllers
             // setup for demo payment call
             var paymentInfo = new PaymentInfo
             {
-                AccountHolder = new AccountHolder { FirstName = "John", LastName = "Doe" },
+                AccountHolder = new AccountHolder { FirstName = "John", LastName = "Doe",
+                    Address = new Address {
+                        City ="Innsbruck",
+                        PostalCode = "6020",
+                        Country = "AT",
+                        Street1 = "Dr. Franz Werner Strasse 36"
+                    }
+                },
+                Shipping = new Shipping
+                {
+                    FirstName = "John",
+                    LastName = "Doe",
+                    Address = new Address
+                    {
+                        City = "Innsbruck",
+                        PostalCode = "6020",
+                        Country = "AT",
+                        Street1 = "Dr. Franz Werner Strasse 36"
+                    }
+                },
                 RequestedAmount = new RequestedAmount { Currency = Currency.EUR, Value = 1.23m },
                 RequestId = Guid.NewGuid().ToString(),
                 PaymentName = paymentName,
-                EndpointName = endpointName
+                EndpointName = endpointName,
+
             };
 
             return Redirect(await _wirecardPaymentService.GetRedirectUrlFromWirecard(paymentInfo));
@@ -118,6 +139,7 @@ namespace DemoWebsite.Controllers
         [HttpPost]
         public async Task<IActionResult> GooglePay(GooglePaymentResponse data)
         {
+            var sig = JsonConvert.SerializeObject(data.PaymentMethodData);
             
 
             var uri = new Uri("https://api-test.wirecard.com/engine/rest/payments/");
@@ -147,7 +169,7 @@ namespace DemoWebsite.Controllers
                   <card>
                     <card-type>visa</card-type>
                   </card>
-                   <cryptogram-value>eyJzaWduYXR1cmUiOiJNRVlDSVFDSVM0QVZRV2ZXTEFBbW56TVZsMXUwckViZnFIM3g0UDhXUVd6K1VrL3dJZ0loQUkvc3oyOHBqVTFBbmluRnlDVGVienAzcXI3ZGs2bXN1WHlZM1JyOCtGbW8iLCJwcm90b2NvbFZlcnNpb24iOiJFQ3YxIiwic2lnbmVkTWVzc2FnZSI6IntcImVuY3J5cHRlZE1lc3NhZ2VcIjpcIjl2RFVMS1JUMUpSWXRTWlZBbkRNR3VCNzJEUFVlb3pVQkJ6NDVmZ2J0bkdrTStRYTFYTThEanI2Q3BhNGxiWDlhOFczWTVhWXppYkNBRWhUWUNuakNLVXV0clp3bHNPYmpNUXJ6a0dPTWhobENkcnU2alFzMnp3ODZCaTVvNkFISThycVg3RFMrcUpSZk9XRmJEM2dHQ1VZVjdBUURUenQveCtNOFkzUkpOeFdIYUdIVE5DNDQ1OHowZHgra2VLWWF6YkJXUWpldXE0bnIzbmdQUkVFa1lXeTN3TFFYb3JjYzZRTUZIa2xJazJ1YzExa2ttWllKRksyU2tGbDQ4SDZ1aGdUeG8ycEJrWkVlR2EyUjVRTjc0NDJ2VHZ4bGxJQW9NMkc3UkNFNmlxODNQSzlaaUNtWURoYXBHaTI0NnpPRG56Z0tiMlFvSXVWS2wrZFRydUowdzdVRkJpRTBFZ3lWVU1iY1JmcjFQaWJtNThHaFhFRU9JTWV6OE55S0s1dFBmdFkwMmRiV3ZpNVFtRisyK2diUFA1Z1h2eCtJRTN1ZVJobGJYOWFmUFo5M1JRVmxKUFkvcWtMYkVIaW1tSkFRVW9HU1lrZTRlSEdRSE9ib2tDaU5WQlg3dTRsVEIzUmNhY1FiNlJ3bGdcXHUwMDNkXFx1MDAzZFwiLFwiZXBoZW1lcmFsUHVibGljS2V5XCI6XCJCSnNaYWdTclowNFl4SmhMbTNhNkhST3dWdkJYRnFnc1NETlc4eEZqU2E1NithdGVHb0l6NHdYc3VFamh2VDllMWNkL2k5VXJqT0t4cEpXUTZzQ0czdGtcXHUwMDNkXCIsXCJ0YWdcIjpcIngxNkU5Y3U1UTZscUhlMENzL0FtZ3drMzcxeGZNZWNsZXAwak5jRWtIeFlcXHUwMDNkXCJ9In0=</cryptogram-value>
+                   <cryptogram-value>{sig}</cryptogram-value>
                     <cryptogram-type>google-pay</cryptogram-type>
                   </cryptogram>
                   <ip-address>127.0.0.1</ip-address>
@@ -617,5 +639,7 @@ namespace DemoWebsite.Controllers
     {
         public string Type { get; set; }
         public string Token { get; set; }
+
+       
     }
 }

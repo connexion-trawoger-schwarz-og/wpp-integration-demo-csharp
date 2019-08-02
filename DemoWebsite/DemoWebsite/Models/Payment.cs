@@ -58,6 +58,7 @@ namespace DemoWebsite.Models
         /// <summary>
         /// the statuses
         /// </summary>
+        [JsonProperty(PropertyName = "statuses")]
         public Statuses Statuses { get; set; }
 
         /// <summary>
@@ -107,6 +108,14 @@ namespace DemoWebsite.Models
         [XmlElement(ElementName = "account-holder")]
         [JsonProperty(PropertyName = "account-holder")]
         public AccountHolder AccountHolder { get; set; }
+
+        /// <summary>
+        /// the shipping info
+        /// </summary>
+        [XmlElement(ElementName = "shipping")]
+        [JsonProperty(PropertyName = "shipping")]
+        public Shipping Shipping { get; set; }
+
 
         /// <summary>
         /// the payment methods

@@ -31,7 +31,8 @@ namespace Tests
                     AccountHolder = new AccountHolder
                     {
                         FirstName = "john",
-                        LastName = "doe"
+                        LastName = "doe",
+                        Gender = Gender.M
                     },
                     PaymentMethods = new PaymentMethods
                     {

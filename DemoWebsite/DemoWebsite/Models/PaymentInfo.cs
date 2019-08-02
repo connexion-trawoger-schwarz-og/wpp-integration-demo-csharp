@@ -21,7 +21,13 @@ namespace DemoWebsite.Models
         /// <summary>
         /// the card holder
         /// </summary>
-        public AccountHolder AccountHolder { get; internal set; }
+        public AccountHolder AccountHolder { get; set; }
+
+        /// <summary>
+        /// the card holder
+        /// </summary>
+        public Shipping Shipping { get; set; }
+
 
         /// <summary>
         /// the paymentname from config settings

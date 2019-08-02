@@ -101,6 +101,7 @@ namespace DemoWebsite.Services
                     TransactionType = (paymentInfo.TransactionType ?? paymentMethod.DefaultTransactionType).ToString().ToLower(),
                     RequestedAmount = paymentInfo.RequestedAmount,
                     AccountHolder = paymentInfo.AccountHolder,
+                    Shipping = paymentInfo.Shipping,
                     PaymentMethods = new PaymentMethods
                     {
                         PaymentMethod = new PaymentMethod[] {
