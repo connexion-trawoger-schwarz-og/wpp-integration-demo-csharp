@@ -6,17 +6,18 @@ body {
 }
 
 h1, h2 {
-    text-align:center;
+    text-align: center;
+    clear: both;
 }
 
 div.content {
     padding: 0.2em;
     margin: auto;
     width: 60vw;
-    height: 95vh;
     background-color: #fff;
 
 }
+
 
 ul {
     list-style-type: none;
@@ -32,13 +33,19 @@ li {
     border-radius: 0.2em;
     text-align: center;
     background: #0026ff;
+    display: inline-block;
 }
 
     li > a {
         color: #fff;
      }
 
-p.information {
+ul.green li {
+    background: #07a10a;
+    border: 1px solid #07a10a;
+}
+
+div.information {
     width: 70%;
     margin: auto;
     padding: 0.3em;
@@ -46,4 +53,18 @@ p.information {
     -webkit-border-radius: 0.2em;
     border-radius: 0.2em;
     background-color: #ddd;
+}
+
+thead tr td {
+    font-size: 1.1em;
+    font-weight: bold;
+}
+table {
+    border-collapse: collapse;
+}
+
+table td {
+    padding: 3px;
+    border: 1px solid #fff;
+    vertical-align: top;
 }

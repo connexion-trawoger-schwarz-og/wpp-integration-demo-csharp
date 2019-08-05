@@ -1,4 +1,16 @@
-﻿// Copyright (c) 2019 connexion OG / Roman Wienicke
+﻿// ***********************************************************************
+// Assembly         : DemoWebsite
+// Author           : r.wienicke
+// Created          : 07-31-2019
+//
+// Last Modified By : r.wienicke
+// Last Modified On : 08-01-2019
+// ***********************************************************************
+// <copyright file="Startup.cs" company="connexion e.solutions">
+//     Copyright (c) connexion e.solutions. All rights reserved.
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
 using DemoWebsite.Models;
 using DemoWebsite.Services;
 using Microsoft.AspNetCore.Builder;
@@ -14,14 +26,21 @@ using System.Globalization;
 
 namespace DemoWebsite
 {
+    /// <summary>
+    /// Class Startup.
+    /// </summary>
     public class Startup
     {
+        /// <summary>
+        /// Gets the configuration.
+        /// </summary>
+        /// <value>The configuration.</value>
         public IConfigurationRoot Configuration { get; }
 
         /// <summary>
         /// startup  test
         /// </summary>
-        /// <param name="env"></param>
+        /// <param name="env">The env.</param>
         public Startup(IHostingEnvironment env)
         {
 
@@ -36,6 +55,10 @@ namespace DemoWebsite
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+        /// <summary>
+        /// Configures the services.
+        /// </summary>
+        /// <param name="services">The services.</param>
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<WirecardConfiguration>(Configuration.GetSection("wirecard"));
@@ -60,6 +83,11 @@ namespace DemoWebsite
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// <summary>
+        /// Configures the specified application.
+        /// </summary>
+        /// <param name="app">The application.</param>
+        /// <param name="env">The env.</param>
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             var defaultDateCulture = "de-AT";

@@ -1,4 +1,16 @@
-﻿// Copyright (c) 2019 connexion OG / Roman Wienicke
+﻿// ***********************************************************************
+// Assembly         : DemoWebsite
+// Author           : r.wienicke
+// Created          : 07-31-2019
+//
+// Last Modified By : r.wienicke
+// Last Modified On : 08-05-2019
+// ***********************************************************************
+// <copyright file="HomeController.cs" company="connexion e.solutions">
+//     Copyright (c) connexion e.solutions. All rights reserved.
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
 using DemoWebsite.Models;
 using DemoWebsite.Services;
 using Microsoft.AspNetCore.Http;
@@ -18,7 +30,9 @@ namespace DemoWebsite.Controllers
 {
     /// <summary>
     /// startup controller
+    /// Implements the <see cref="Microsoft.AspNetCore.Mvc.Controller" />
     /// </summary>
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     public class HomeController : Controller
     {
         /// <summary>
@@ -26,6 +40,10 @@ namespace DemoWebsite.Controllers
         /// </summary>
         private readonly WirecardPaymentService _wirecardPaymentService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HomeController"/> class.
+        /// </summary>
+        /// <param name="wirecardPaymentService">The wirecard payment service.</param>
         public HomeController(WirecardPaymentService wirecardPaymentService)
         {
             _wirecardPaymentService = wirecardPaymentService;
@@ -34,7 +52,7 @@ namespace DemoWebsite.Controllers
         /// <summary>
         /// payment selection view
         /// </summary>
-        /// <returns></returns>
+        /// <returns>IActionResult.</returns>
         public IActionResult Index()
         {
             return View();
@@ -46,12 +64,12 @@ namespace DemoWebsite.Controllers
         /// </summary>
         /// <param name="endpointName">querystring parameter</param>
         /// <param name="paymentName">querystring parameter</param>
+        /// <returns>Task&lt;IActionResult&gt;.</returns>
         /// Testdata:
         /// creditcard: cardNr.: 4200000000000018, CVC: 018, validTo: 01/23
         /// paypal:  email: buyer @wirecard.com, password: Einstein35
         /// iDeal: bank: Rabobank RABONL2U -or-  ING INGBNL2A
         /// sofortbanking: country: Deutschland, BIC: SFRTDE20XXX, accountNr.: 88888888
-        /// <returns></returns>
         public async Task<IActionResult> Payment(string endpointName, string paymentName)
         {
             // setup for demo payment call
@@ -94,7 +112,7 @@ namespace DemoWebsite.Controllers
         /// Bank: Ärzte- und Apotheker Bank BWFBATW1XXX
         /// Just click to continue - no input needed.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Task&lt;IActionResult&gt;.</returns>
 
         public async Task<IActionResult> EpsEpp()
         {
@@ -125,17 +143,22 @@ namespace DemoWebsite.Controllers
 
         }
 
+        /// <summary>
+        /// Googles the pay start.
+        /// </summary>
+        /// <returns>IActionResult.</returns>
         public IActionResult GooglePayStart()
         {
             return View();
         }
 
-        
+
 
         /// <summary>
         /// Ealstic payment call for Google Pay / noch nicht komplett implementiert da Google Daten nötig sind (gleich wie bei Apple
         /// </summary>
-        /// <returns></returns>
+        /// <param name="paymentToken">The payment token.</param>
+        /// <returns>Task&lt;IActionResult&gt;.</returns>
         [HttpPost]
         public async Task<IActionResult> GooglePay(string paymentToken)
         {
@@ -203,8 +226,8 @@ namespace DemoWebsite.Controllers
         /// <summary>
         /// payment response action
         /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
+        /// <param name="data">The data.</param>
+        /// <returns>System.String.</returns>
         public string Success(IFormCollection data)
         {
             // data from elastc payment
@@ -243,10 +266,10 @@ namespace DemoWebsite.Controllers
         /// <summary>
         /// decode wirecard response data
         /// </summary>
-        /// <param name="signatureBase64"></param>
-        /// <param name="signatureAlgorithm"></param>
-        /// <param name="responseBase64"></param>
-        /// <returns></returns>
+        /// <param name="signatureBase64">The signature base64.</param>
+        /// <param name="signatureAlgorithm">The signature algorithm.</param>
+        /// <param name="responseBase64">The response base64.</param>
+        /// <returns>System.String.</returns>
         private string DecodeResponse(string signatureBase64, string signatureAlgorithm, string responseBase64)
         {
             var bytes = Convert.FromBase64String(responseBase64);
@@ -256,7 +279,7 @@ namespace DemoWebsite.Controllers
         /// <summary>
         /// error response redirect
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Task&lt;IActionResult&gt;.</returns>
         public async Task<IActionResult> Error()
         {
             return await Task.FromResult(Content("Error"));
@@ -265,12 +288,17 @@ namespace DemoWebsite.Controllers
         /// <summary>
         /// cancel response redirect
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Task&lt;IActionResult&gt;.</returns>
         public async Task<IActionResult> Cancel()
         {
             return await Task.FromResult(Content("Cancel"));
         }
 
+        /// <summary>
+        /// Ipns the specified response.
+        /// </summary>
+        /// <param name="response">The response.</param>
+        /// <returns>Task&lt;IActionResult&gt;.</returns>
         public async Task<IActionResult> Ipn([FromBody]PaymentResponse response)
         {
             return Content($"data receiveed: {response.Payment.CompletionTimeUtc}");
@@ -282,10 +310,10 @@ namespace DemoWebsite.Controllers
 
         /// <summary>
         /// legacy call for credit card payment
-        /// Testdaten: 
+        /// Testdaten:
         /// Nr: 4200000000000018, CVC 018, validTo: 01/23
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Task&lt;IActionResult&gt;.</returns>
         [Obsolete]
         public async Task<IActionResult> CreditCard()
         {
@@ -329,12 +357,12 @@ namespace DemoWebsite.Controllers
         }
 
         /// <summary>
-        ///legacy call for paypal
+        /// legacy call for paypal
         /// Testdaten:
         /// Email buyer @wirecard.com
         /// Password Einstein35
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Task&lt;IActionResult&gt;.</returns>
         [Obsolete]
         public async Task<IActionResult> PayPal()
         {
@@ -381,7 +409,7 @@ namespace DemoWebsite.Controllers
         /// Rabobank RABONL2U
         /// ING INGBNL2A
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Task&lt;IActionResult&gt;.</returns>
         [Obsolete]
         public async Task<IActionResult> IDeal()
         {
@@ -423,11 +451,11 @@ namespace DemoWebsite.Controllers
 
         /// <summary>
         /// legacy call for Sofortüberweisung / Klarna
-        /// TestDaten: 
-        /// BIC: Deutschland / SFRTDE20XXX 
+        /// TestDaten:
+        /// BIC: Deutschland / SFRTDE20XXX
         /// Kontonummer: 88888888
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Task&lt;IActionResult&gt;.</returns>
         public async Task<IActionResult> Klarna()
         {
             var uri = new Uri("https://wpp-test.wirecard.com/api/payment/register");
@@ -468,11 +496,11 @@ namespace DemoWebsite.Controllers
 
         /// <summary>
         /// elastic payment call for Sofortüberweisung / Klarna
-        /// TestDaten: 
-        /// BIC: Deutschland / SFRTDE20XXX 
+        /// TestDaten:
+        /// BIC: Deutschland / SFRTDE20XXX
         /// Kontonummer: 88888888
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Task&lt;IActionResult&gt;.</returns>
         public async Task<IActionResult> KlarnaEpp()
         {
             var uri = new Uri("https://api-test.wirecard.com/engine/rest/paymentmethods");
@@ -505,7 +533,7 @@ namespace DemoWebsite.Controllers
         /// Bank: Ärzte- und Apotheker Bank BWFBATW1XXX
         /// Just click to continue - no input needed.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Task&lt;IActionResult&gt;.</returns>
 
         public async Task<IActionResult> Eps()
         {
@@ -554,12 +582,12 @@ namespace DemoWebsite.Controllers
         /// <summary>
         /// legacy method for getting url from wirecard
         /// </summary>
-        /// <param name="uri"></param>
-        /// <param name="username"></param>
-        /// <param name="password"></param>
-        /// <param name="payload"></param>
-        /// <param name="requestType"></param>
-        /// <returns></returns>
+        /// <param name="uri">The URI.</param>
+        /// <param name="username">The username.</param>
+        /// <param name="password">The password.</param>
+        /// <param name="payload">The payload.</param>
+        /// <param name="requestType">Type of the request.</param>
+        /// <returns>Task&lt;IActionResult&gt;.</returns>
         [Obsolete]
         private async Task<IActionResult> GetRedirectUrlFromWirecard(Uri uri, string username, string password, string payload, RequestFormat requestType)
         {
@@ -586,6 +614,11 @@ namespace DemoWebsite.Controllers
                 return await CreateRedirectUrlXml(response);
             }
         }
+        /// <summary>
+        /// Creates the redirect URL.
+        /// </summary>
+        /// <param name="httpResponseMessage">The HTTP response message.</param>
+        /// <returns>Task&lt;IActionResult&gt;.</returns>
         [Obsolete]
         private async Task<IActionResult> CreateRedirectUrl(HttpResponseMessage httpResponseMessage)
         {
@@ -594,6 +627,11 @@ namespace DemoWebsite.Controllers
             var redirect = json.Value<string>("payment-redirect-url");
             return Redirect(redirect);
         }
+        /// <summary>
+        /// Creates the redirect URL XML.
+        /// </summary>
+        /// <param name="httpResponseMessage">The HTTP response message.</param>
+        /// <returns>Task&lt;IActionResult&gt;.</returns>
         [Obsolete]
         private async Task<IActionResult> CreateRedirectUrlXml(HttpResponseMessage httpResponseMessage)
         {
@@ -608,12 +646,23 @@ namespace DemoWebsite.Controllers
 
             return Redirect(redirect);
         }
+        /// <summary>
+        /// Creates the authentication header.
+        /// </summary>
+        /// <param name="username">The username.</param>
+        /// <param name="password">The password.</param>
+        /// <returns>AuthenticationHeaderValue.</returns>
         [Obsolete]
         private AuthenticationHeaderValue CreateAuthenticationHeader(string username, string password)
         {
             return new AuthenticationHeaderValue(
             "Basic", Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes($"{username}:{password}")));
         }
+        /// <summary>
+        /// Gets the redirecturl.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <returns>System.String.</returns>
         [Obsolete]
         private string GetRedirecturl(string path)
         {
@@ -623,30 +672,86 @@ namespace DemoWebsite.Controllers
         #endregion
     }
 
+    /// <summary>
+    /// Class GooglePaymentResponse.
+    /// </summary>
     public class GooglePaymentResponse
     {
+        /// <summary>
+        /// Gets or sets the API version minor.
+        /// </summary>
+        /// <value>The API version minor.</value>
         public int ApiVersionMinor { get; set; }
+        /// <summary>
+        /// Gets or sets the API version.
+        /// </summary>
+        /// <value>The API version.</value>
         public int ApiVersion { get; set; }
+        /// <summary>
+        /// Gets or sets the payment method data.
+        /// </summary>
+        /// <value>The payment method data.</value>
         public PaymentMethodData PaymentMethodData { get; set; }
     }
 
+    /// <summary>
+    /// Class PaymentMethodData.
+    /// </summary>
     public class PaymentMethodData
     {
+        /// <summary>
+        /// Gets or sets the description.
+        /// </summary>
+        /// <value>The description.</value>
         public string Description { get; set; }
+        /// <summary>
+        /// Gets or sets the tokenization data.
+        /// </summary>
+        /// <value>The tokenization data.</value>
         public TokenizationData TokenizationData { get; set; }
+        /// <summary>
+        /// Gets or sets the type.
+        /// </summary>
+        /// <value>The type.</value>
         public string Type { get; set; }
+        /// <summary>
+        /// Gets or sets the information.
+        /// </summary>
+        /// <value>The information.</value>
         public Info Info { get; set; }
     }
 
+    /// <summary>
+    /// Class Info.
+    /// </summary>
     public class Info
     {
+        /// <summary>
+        /// Gets or sets the card network.
+        /// </summary>
+        /// <value>The card network.</value>
         public string CardNetwork { get; set; }
+        /// <summary>
+        /// Gets or sets the card details.
+        /// </summary>
+        /// <value>The card details.</value>
         public string CardDetails { get; set; }
     }
 
+    /// <summary>
+    /// Class TokenizationData.
+    /// </summary>
     public class TokenizationData
     {
+        /// <summary>
+        /// Gets or sets the type.
+        /// </summary>
+        /// <value>The type.</value>
         public string Type { get; set; }
+        /// <summary>
+        /// Gets or sets the token.
+        /// </summary>
+        /// <value>The token.</value>
         public string Token { get; set; }
 
        

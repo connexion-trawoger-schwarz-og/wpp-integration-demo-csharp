@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <Authors>r.wienicke@connexion.at</Authors>
+    <Company>connexion e.solutions</Company>
   </PropertyGroup>
 
   <ItemGroup>

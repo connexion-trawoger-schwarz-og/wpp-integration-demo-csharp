@@ -1,5 +1,19 @@
-﻿
-    <div id="container"></div>
+﻿// ***********************************************************************
+// Assembly         : DemoWebsite
+// Author           : r.wienicke
+// Created          : 08-01-2019
+//
+// Last Modified By : r.wienicke
+// Last Modified On : 08-02-2019
+// ***********************************************************************
+// <copyright file="GooglePayStart.cshtml" company="connexion e.solutions">
+    //     Copyright (c) connexion e.solutions. All rights reserved.
+    //
+</copyright>
+// <summary></summary>
+// ***********************************************************************
+
+<div id="container"></div>
 
 @section Scripts {
     <script>
@@ -94,6 +108,9 @@
          * @@returns {object} Google Pay API version, payment methods supported by the site
          */
         function getGoogleIsReadyToPayRequest() {
+            /// <summary>
+            /// Gets the google is ready to pay request.
+            /// </summary>
             return Object.assign(
                 {},
                 baseRequest,
@@ -145,6 +162,9 @@
             const paymentsClient = getGooglePaymentsClient();
             paymentsClient.isReadyToPay(getGoogleIsReadyToPayRequest())
                 .then(function (response) {
+                    /// <summary>
+                    /// </summary>
+                    /// <param name="response">The response.</param>
                     if (response.result) {
                         addGooglePayButton();
                         // @@todo prefetch payment data to improve performance after confirming site functionality
@@ -212,6 +232,9 @@
             paymentsClient.loadPaymentData(paymentDataRequest)
                 .then(function (paymentData) {
                     // handle the response
+                    /// <summary>
+                    /// </summary>
+                    /// <param name="paymentData">The payment data.</param>
                     processPayment(paymentData);
                 })
                 .catch(function (err) {
@@ -238,4 +261,4 @@
             src="https://pay.google.com/gp/p/js/pay.js"
             onload="onGooglePayLoaded()"></script>
 
-    }
+}

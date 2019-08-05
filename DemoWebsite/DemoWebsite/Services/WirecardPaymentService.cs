@@ -1,4 +1,16 @@
-﻿// Copyright (c) 2019 connexion OG / Roman Wienicke
+﻿// ***********************************************************************
+// Assembly         : DemoWebsite
+// Author           : r.wienicke
+// Created          : 08-01-2019
+//
+// Last Modified By : r.wienicke
+// Last Modified On : 08-05-2019
+// ***********************************************************************
+// <copyright file="WirecardPaymentService.cs" company="connexion e.solutions">
+//     Copyright (c) connexion e.solutions. All rights reserved.
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
 using DemoWebsite.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
@@ -32,8 +44,8 @@ namespace DemoWebsite.Services
         /// <summary>
         /// constructor
         /// </summary>
-        /// <param name="wirecardOptions"></param>
-        /// <param name="httpContextAccessor"></param>
+        /// <param name="wirecardOptions">The wirecard options.</param>
+        /// <param name="httpContextAccessor">The HTTP context accessor.</param>
         public WirecardPaymentService(IOptions<WirecardConfiguration> wirecardOptions, IHttpContextAccessor httpContextAccessor)
         {
             _wirecardConfiguration = wirecardOptions.Value;
@@ -43,8 +55,9 @@ namespace DemoWebsite.Services
         /// <summary>
         /// get the redirect url from wirecard
         /// </summary>
-        /// <param name="paymentInfo"></param>
-        /// <returns></returns>
+        /// <param name="paymentInfo">The payment information.</param>
+        /// <returns>Task&lt;System.String&gt;.</returns>
+        /// <exception cref="Exception">Create redirect url failed: {await response.Content.ReadAsStringAsync()}{Environment.NewLine}</exception>
         public async Task<string> GetRedirectUrlFromWirecard(PaymentInfo paymentInfo)
         {
             // http client
@@ -83,10 +96,10 @@ namespace DemoWebsite.Services
         /// <summary>
         /// create the payload for the rest request
         /// </summary>
-        /// <param name="paymentInfo"><see cref="PaymentInfo"/></param>
+        /// <param name="paymentInfo"><see cref="PaymentInfo" /></param>
         /// <param name="endpoint"><see cref="WirecardEndpoint" /></param>
-        /// <param name="paymentMethod"><see cref="PaymentMethod"/></param>
-        /// <returns></returns>
+        /// <param name="paymentMethod"><see cref="PaymentMethod" /></param>
+        /// <returns>System.String.</returns>
         private string CreatePayload(PaymentInfo paymentInfo, WirecardEndpoint endpoint, WirecardPayment paymentMethod)
         {
             // create payload class
@@ -137,6 +150,11 @@ namespace DemoWebsite.Services
 
 
 
+        /// <summary>
+        /// Gets the redirecturl.
+        /// </summary>
+        /// <param name="uri">The URI.</param>
+        /// <returns>System.String.</returns>
         private string GetRedirecturl(string uri)
         {
             if (string.IsNullOrEmpty(uri))
@@ -145,6 +163,11 @@ namespace DemoWebsite.Services
         }
 
         // get the redirect url
+        /// <summary>
+        /// Gets the redirecturl.
+        /// </summary>
+        /// <param name="uri">The URI.</param>
+        /// <returns>System.String.</returns>
         private string GetRedirecturl(Uri uri)
         {
             // if absolute / do nothing and return url
@@ -161,9 +184,9 @@ namespace DemoWebsite.Services
         /// <summary>
         /// create the basic auth header
         /// </summary>
-        /// <param name="username"></param>
-        /// <param name="password"></param>
-        /// <returns></returns>
+        /// <param name="username">The username.</param>
+        /// <param name="password">The password.</param>
+        /// <returns>AuthenticationHeaderValue.</returns>
         private AuthenticationHeaderValue CreateAuthenticationHeader(string username, string password)
         {
             return new AuthenticationHeaderValue(
@@ -173,8 +196,8 @@ namespace DemoWebsite.Services
         /// <summary>
         /// create the redirect url form response message
         /// </summary>
-        /// <param name="httpResponseMessage"></param>
-        /// <returns></returns>
+        /// <param name="httpResponseMessage">The HTTP response message.</param>
+        /// <returns>Task&lt;System.String&gt;.</returns>
         private async Task<string> CreateRedirectUrlJson(HttpResponseMessage httpResponseMessage)
         {
             var responseData = await httpResponseMessage.Content.ReadAsStringAsync();
@@ -186,8 +209,8 @@ namespace DemoWebsite.Services
         /// <summary>
         /// create the redirect url form response message
         /// </summary>
-        /// <param name="httpResponseMessage"></param>
-        /// <returns></returns>
+        /// <param name="httpResponseMessage">The HTTP response message.</param>
+        /// <returns>Task&lt;System.String&gt;.</returns>
         private async Task<string> CreateRedirectUrlXml(HttpResponseMessage httpResponseMessage)
         {
             var responseData = await httpResponseMessage.Content.ReadAsStringAsync();
@@ -201,12 +224,22 @@ namespace DemoWebsite.Services
 
             return redirect;
         }
+        /// <summary>
+        /// Base64s the encode.
+        /// </summary>
+        /// <param name="plainText">The plain text.</param>
+        /// <returns>System.String.</returns>
         public string Base64Encode(string plainText)
         {
             var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
             return Convert.ToBase64String(plainTextBytes);
         }
 
+        /// <summary>
+        /// Base64s the decode.
+        /// </summary>
+        /// <param name="base64EncodedData">The base64 encoded data.</param>
+        /// <returns>System.String.</returns>
         public string Base64Decode(string base64EncodedData)
         {
             var base64EncodedBytes = Convert.FromBase64String(base64EncodedData);

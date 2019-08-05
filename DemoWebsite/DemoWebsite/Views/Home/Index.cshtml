@@ -1,64 +1,133 @@
-﻿@* Copyright (c) 2019 connexion OG / Roman Wienicke *@
+﻿// ***********************************************************************
+// Assembly         : DemoWebsite
+// Author           : r.wienicke
+// Created          : 07-31-2019
+//
+// Last Modified By : r.wienicke
+// Last Modified On : 08-05-2019
+// ***********************************************************************
+// <copyright file="Index.cshtml" company="connexion e.solutions">
+    //     Copyright (c) connexion e.solutions. All rights reserved.
+    //
+</copyright>
+// <summary></summary>
+// ***********************************************************************
+@* Copyright (c) 2019 connexion OG / Roman Wienicke *@
 @{
     ViewData["Title"] = "Index";
 }
 
 <h1>Payment Selection</h1>
-<div class="section-1">
-    <div>
-        <h2>Payment Page V2 Samples</h2>
-        <p class="information">
-            The following payment methods are implemented with the Wirecard Payment Page V2
-            Each payment uses the same gateway and JSON as payload format.<br />
-            <b>Important:</b>
-            The username / password and merchant-id change depending on the payment method.
-        </p>
-        <ul>
-            <li>
-                <a class="checkout-button-steps-button step" asp-action="Payment" asp-route-endpointName="PaymentPageV2" asp-route-paymentName="creditcard">CreditCard →</a>
-            </li>
-            <li>
-                <a class="checkout-button-steps-button step" asp-action="Payment" asp-route-endpointName="PaymentPageV2" asp-route-paymentName="paypal">PayPal →</a>
-            </li>
-            <li>
-                <a class="checkout-button-steps-button step" asp-action="Payment" asp-route-endpointName="PaymentPageV2" asp-route-paymentName="ideal">IDeal →</a>
-            </li>
-            <li>
-                <a class="checkout-button-steps-button step" asp-action="Payment" asp-route-endpointName="PaymentPageV2" asp-route-paymentName="sofortbanking">Klarna →</a>
-            </li>
-            <li>
-                <a class="checkout-button-steps-button step" asp-action="Payment" asp-route-endpointName="PaymentPageV2" asp-route-paymentName="eps">EPS →</a>
+<div>
+    <ul class="green">
+        <li>
+            <a href="#pp2">Payment Page V2</a>
+        </li>
+        <li>
+            <a href="#gp">Google Pay</a>
+        </li>
+        <li>
+            <a href="#ep">Elastic Payment</a>
+        </li>
+    </ul>
 
-            </li>
-        </ul>
+    <h2><a name="pp2">Payment Page V2</a></h2>
+    <div class="information">
+        Each payment uses the same gateway and JSON as payload format.<br />
+        <b>Important:</b>
+        The username / password and merchant-id change depending on the payment method.
+        <hr />
+        <h3>Demo Data:</h3>
+        <table>
+            <thead>
+                <tr>
+                    <td>Paymentmethod</td>
+                    <td>Testdata</td>
+                </tr>
+            </thead>
+            <tr>
+                <td>Creditcard</td>
+                <td>
+                    card nr.: 4200000000000018<br />
+                    CVC-code: 018<br />
+                    valid to: 01/23
+                </td>
+            </tr>
+            <tr>
+                <td>Paypal</td>
+                <td>
+                    email: buyer@wirecard.com<br />
+                    password: Einstein35
+                </td>
+            </tr>
+            <tr>
+                <td>iDeal</td>
+                <td>
+                    bank: Rabobank RABONL2U <br />
+                    bank: ING INGBNL2A
+                </td>
+            </tr>
+            <tr>
+                <td>Sofortbanking / Klarna</td>
+                <td>
+                    country: Deutschland<br />
+                    BIC: SFRTDE20XXX<br />
+                    accountNr.: 88888888
+                </td>
+            </tr>
+            <tr>
+                <td>EPS</td>
+                <td>
+                    bank: Ärztebank, leave everything else empty
+                </td>
+            </tr>
+        </table>
     </div>
-    <div>
-        <h2>Google Payment</h2>
-        <p class="information">
-            work in progress...
-        </p>
-        <ul>
-            <li>
-                <a class="checkout-button-steps-button step" asp-action="GooglePayStart">Google Pay →</a>
-            </li>
-        </ul>
-    </div>
-    <div>
-        <h2>Elastic Payment Samples</h2>
-        <p class="information">
-            The following payment methods are implemented with the Wirecard Elastic Payment Gateway
-            Each payment uses the same gateway and XML as payload format.<br />
-            <b>Important:</b>
-            The username / password and merchant-id change depending on the payment method.
-        </p>
-        <ul>
-            <li>
-                <a class="checkout-button-steps-button step" asp-action="KlarnaEpp">Klarna EPP →</a>
-            </li>
-            <li>
-                <a class="checkout-button-steps-button step" asp-action="EpsEpp">EPS EPP →</a>
+    <ul>
+        <li>
+            <a asp-action="Payment" asp-route-endpointName="PaymentPageV2" asp-route-paymentName="creditcard">CreditCard →</a>
+        </li>
+        <li>
+            <a asp-action="Payment" asp-route-endpointName="PaymentPageV2" asp-route-paymentName="paypal">PayPal →</a>
+        </li>
+        <li>
+            <a asp-action="Payment" asp-route-endpointName="PaymentPageV2" asp-route-paymentName="ideal">IDeal →</a>
+        </li>
+        <li>
+            <a asp-action="Payment" asp-route-endpointName="PaymentPageV2" asp-route-paymentName="sofortbanking">Klarna →</a>
+        </li>
+        <li>
+            <a asp-action="Payment" asp-route-endpointName="PaymentPageV2" asp-route-paymentName="eps">EPS →</a>
 
-            </li>
-        </ul>
+        </li>
+    </ul>
+
+    <h2><a name="gp">Google Payment</a></h2>
+    <div class="information">
+        work in progress...
     </div>
+    <ul>
+        <li>
+            <a asp-action="GooglePayStart">Google Pay →</a>
+        </li>
+    </ul>
+
+    <h2><a name="ep">Elastic Payment</a></h2>
+    <div class="information">
+        The following payment methods are implemented with the Wirecard Elastic Payment Gateway
+        Each payment uses the same gateway and XML as payload format.<br />
+        <b>Important:</b>
+        The username / password and merchant-id change depending on the payment method.
+    </div>
+    <ul>
+        <li>
+            <a asp-action="KlarnaEpp">Klarna EPP →</a>
+        </li>
+        <li>
+            <a asp-action="EpsEpp">EPS EPP →</a>
+
+        </li>
+    </ul>
+
 </div>
+
