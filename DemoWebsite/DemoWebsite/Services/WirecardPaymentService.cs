@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -69,7 +70,7 @@ namespace DemoWebsite.Services
             }
 
             // extract redirect url from response
-            if (paymentMethod.RequestType == RequestType.Json)
+            if (paymentMethod.RequestType == RequestFormat.Json)
             {
                 return await CreateRedirectUrlJson(response);
             }
@@ -111,7 +112,20 @@ namespace DemoWebsite.Services
                     SuccessRedirectUrl = GetRedirecturl(endpoint.SuccessRedirectUrl),
                     FailRedirectUrl = GetRedirecturl(endpoint.FailRedirectUrl),
                     CancelRedirectUrl = GetRedirecturl(endpoint.CancelRedirectUrl),
-                    Descriptor = "test"
+                    Descriptor = "test",
+                    Notifications = Notifications.Create(paymentMethod.RequestType, new Notification[] {
+                            new Notification {
+                                Url = GetRedirecturl(endpoint.IpnDefaultNotificationUrl)
+                            },
+                            new Notification {
+                                Url = GetRedirecturl(endpoint.IpnSuccessNotificationUrl),
+                                TransactionState = TransactionState.Success
+                            },
+                            new Notification {
+                                Url = GetRedirecturl(endpoint.IpnFailedNotificationUrl),
+                                TransactionState = TransactionState.Failed }
+                            }
+                    )
                 }
 
             };
@@ -119,6 +133,15 @@ namespace DemoWebsite.Services
             var data = JsonConvert.SerializeObject(payload, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
             return data;
 
+        }
+
+
+
+        private string GetRedirecturl(string uri)
+        {
+            if (string.IsNullOrEmpty(uri))
+                return null;
+            return GetRedirecturl(new Uri(uri, UriKind.RelativeOrAbsolute));
         }
 
         // get the redirect url

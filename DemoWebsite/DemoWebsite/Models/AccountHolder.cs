@@ -46,8 +46,7 @@ namespace DemoWebsite.Models
         [JsonProperty(PropertyName = "date-of-birth")]
         public DateTime DateOfBirth { get; set; }
 
-        [JsonProperty(PropertyName = "gender"),
-         JsonConverter(typeof(StringEnumConverter))]
+        [JsonProperty(PropertyName = "gender")]
         public Gender Gender { get; set; }
 
         [JsonProperty(PropertyName = "social-security-number")]

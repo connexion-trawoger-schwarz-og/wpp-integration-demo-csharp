@@ -1,0 +1,75 @@
+{
+  "payment": {
+    "statuses": {
+      "status": [
+        {
+          "code": "201.0000",
+          "description": "3d-acquirer:The resource was successfully created.",
+          "severity": "information"
+        }
+      ]
+    },
+    "shipping": {
+      "address": {
+        "street1": "Strasse 2",
+        "city": "Wien",
+        "country": "AT",
+        "postal-code": "1017"
+      },
+      "first-name": "John",
+      "last-name": "Doe"
+    },
+    "descriptor": "test",
+    "notifications": {
+      "notification": [
+        {
+          "url": "https://connexionwirecarddemo.azurewebsites.net/home/ipn"
+        }
+      ],
+      "format": "application/json"
+    },
+    "device": {
+      "fingerprint": "61b3e68b-20f6-c397-8b8d-3b08b67717ad"
+    },
+    "merchant-account-id": {
+      "value": "7a6dd74f-06ab-4f3f-a864-adc52687270a"
+    },
+    "transaction-id": "b6dc6f41-157a-4e92-9ee9-82f1d94a97f3",
+    "request-id": "853a01d9-af5c-46f2-8dac-1b9482a4b912",
+    "transaction-type": "authorization",
+    "transaction-state": "success",
+    "completion-time-stamp": 1564992944000,
+    "requested-amount": {
+      "value": 1.23,
+      "currency": "EUR"
+    },
+    "account-holder": {
+      "gender": "m",
+      "address": {
+        "street1": "Strasse 1",
+        "city": "Wien",
+        "country": "AT",
+        "postal-code": "1011"
+      },
+      "first-name": "John",
+      "last-name": "Doe"
+    },
+    "card-token": {
+      "token-id": "4242796444090018",
+      "masked-account-number": "420000******0018"
+    },
+    "payment-methods": {
+      "payment-method": [
+        {
+          "name": "creditcard"
+        }
+      ]
+    },
+    "authorization-code": "965649",
+    "api-id": "wpp",
+    "cancel-redirect-url": "https://connexionwirecarddemo.azurewebsites.net/home/Cancel",
+    "fail-redirect-url": "https://connexionwirecarddemo.azurewebsites.net/home/Error",
+    "success-redirect-url": "https://connexionwirecarddemo.azurewebsites.net/home/Success",
+    "provider-account-id": "70010"
+  }
+}

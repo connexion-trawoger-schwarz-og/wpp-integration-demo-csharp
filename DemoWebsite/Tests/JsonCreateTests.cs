@@ -10,6 +10,15 @@ namespace Tests
 {
     public class JsonCreateTests
     {
+        [TestCase(RequestFormat.Json, @"""application/json""")]
+        [TestCase(RequestFormat.Xml, @"""application/xml""")]
+        public void EnumParseTest(RequestFormat format, string expected)
+        {
+            string parsedFormat = JsonConvert.SerializeObject(format);
+
+            Assert.AreEqual(parsedFormat, expected);
+        }
+
         [TestCase()]
         public void CreateJsonTest()
         {

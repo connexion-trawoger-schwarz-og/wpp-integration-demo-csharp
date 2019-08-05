@@ -46,7 +46,21 @@ namespace DemoWebsite.Models
         /// </summary>
         [XmlElement(ElementName = "completion-time-stamp")]
         [JsonProperty(PropertyName = "completion-time-stamp")]
-        public DateTime CompletionTime { get; set; }
+        public long? CompletionTimeStamp { get; set; }
+
+        private DateTime? _CompletionTime;
+        public DateTime? CompletionTime
+        {
+            get
+            {
+                if (CompletionTimeStamp.HasValue && _CompletionTime == null)
+                {
+                    DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeMilliseconds(CompletionTimeStamp.Value);
+                    _CompletionTime = dateTimeOffset.UtcDateTime.ToLocalTime();
+                }
+                return _CompletionTime;
+            }
+        }
 
         /// <summary>
         /// the requested amount

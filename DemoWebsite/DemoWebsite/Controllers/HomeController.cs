@@ -7,6 +7,7 @@ using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -58,10 +59,10 @@ namespace DemoWebsite.Controllers
             {
                 AccountHolder = new AccountHolder { FirstName = "John", LastName = "Doe",
                     Address = new Address {
-                        City ="Innsbruck",
-                        PostalCode = "6020",
+                        City ="Wien",
+                        PostalCode = "1011",
                         Country = "AT",
-                        Street1 = "Dr. Franz Werner Strasse 36"
+                        Street1 = "Strasse 1"
                     }
                 },
                 Shipping = new Shipping
@@ -70,17 +71,16 @@ namespace DemoWebsite.Controllers
                     LastName = "Doe",
                     Address = new Address
                     {
-                        City = "Innsbruck",
-                        PostalCode = "6020",
+                        City = "Wien",
+                        PostalCode = "1017",
                         Country = "AT",
-                        Street1 = "Dr. Franz Werner Strasse 36"
+                        Street1 = "Strasse 2"
                     }
                 },
                 RequestedAmount = new RequestedAmount { Currency = Currency.EUR, Value = 1.23m },
                 RequestId = Guid.NewGuid().ToString(),
                 PaymentName = paymentName,
                 EndpointName = endpointName,
-
             };
 
             return Redirect(await _wirecardPaymentService.GetRedirectUrlFromWirecard(paymentInfo));
@@ -119,7 +119,7 @@ namespace DemoWebsite.Controllers
                 </payment>";
 
 
-            return await GetRedirectUrlFromWirecard(uri, username, password, request, RequestType.Xml);
+            return await GetRedirectUrlFromWirecard(uri, username, password, request, RequestFormat.Xml);
 
 
 
@@ -217,7 +217,7 @@ namespace DemoWebsite.Controllers
                 var signature = Encoding.UTF8.GetString(Convert.FromBase64String(signatureBase64));
                 var response = DecodeResponse(signatureBase64, signatureAlgorithm, responseBase64);
 
-
+                var payment = PaymentResponse.Parse(response, RequestFormat.Json);
 
                 return $"{response}";
             }
@@ -229,6 +229,9 @@ namespace DemoWebsite.Controllers
                 string locale = data["locale"];
                 string responseBase64 = data["eppresponse"];
                 string response = Encoding.UTF8.GetString(Convert.FromBase64String(responseBase64));
+
+                var payment = PaymentResponse.Parse(response, RequestFormat.Xml);
+
                 return $"{response}";
             }
 
@@ -268,10 +271,17 @@ namespace DemoWebsite.Controllers
             return await Task.FromResult(Content("Cancel"));
         }
 
-        public async Task<IActionResult> Ipn(IFormCollection data)
+        public async Task<IActionResult> Ipn()
         {
-
-            return await Task.FromResult(Ok());
+            using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
+            {
+                string rawValue = await reader.ReadToEndAsync();
+                using (var sw = new StreamWriter($"{DateTime.Now:yyyyMMddHHmmss}.json"))
+                {
+                    sw.Write(rawValue);
+                }
+            }
+            return Ok();
         }
 
 
@@ -321,7 +331,7 @@ namespace DemoWebsite.Controllers
                   }}
                 }}";
 
-            return await GetRedirectUrlFromWirecard(uri, username, password, request, RequestType.Json);
+            return await GetRedirectUrlFromWirecard(uri, username, password, request, RequestFormat.Json);
 
         }
 
@@ -369,7 +379,7 @@ namespace DemoWebsite.Controllers
                   }}
                 }}";
 
-            return await GetRedirectUrlFromWirecard(uri, username, password, request, RequestType.Json);
+            return await GetRedirectUrlFromWirecard(uri, username, password, request, RequestFormat.Json);
         }
 
         /// <summary>
@@ -414,7 +424,7 @@ namespace DemoWebsite.Controllers
                 }}";
 
 
-            return await GetRedirectUrlFromWirecard(uri, username, password, request, RequestType.Json);
+            return await GetRedirectUrlFromWirecard(uri, username, password, request, RequestFormat.Json);
 
         }
 
@@ -460,7 +470,7 @@ namespace DemoWebsite.Controllers
                 }}";
 
 
-            return await GetRedirectUrlFromWirecard(uri, username, password, request, RequestType.Json);
+            return await GetRedirectUrlFromWirecard(uri, username, password, request, RequestFormat.Json);
         }
 
         /// <summary>
@@ -493,7 +503,7 @@ namespace DemoWebsite.Controllers
                 </payment>";
 
 
-            return await GetRedirectUrlFromWirecard(uri, username, password, request, RequestType.Xml);
+            return await GetRedirectUrlFromWirecard(uri, username, password, request, RequestFormat.Xml);
         }
 
         /// <summary>
@@ -542,7 +552,7 @@ namespace DemoWebsite.Controllers
                   }}
                 }}";
 
-            return await GetRedirectUrlFromWirecard(uri, username, password, request, RequestType.Json);
+            return await GetRedirectUrlFromWirecard(uri, username, password, request, RequestFormat.Json);
 
 
         }
@@ -558,7 +568,7 @@ namespace DemoWebsite.Controllers
         /// <param name="requestType"></param>
         /// <returns></returns>
         [Obsolete]
-        private async Task<IActionResult> GetRedirectUrlFromWirecard(Uri uri, string username, string password, string payload, RequestType requestType)
+        private async Task<IActionResult> GetRedirectUrlFromWirecard(Uri uri, string username, string password, string payload, RequestFormat requestType)
         {
             var client = new HttpClient();
 
@@ -574,7 +584,7 @@ namespace DemoWebsite.Controllers
             }
 
 
-            if (requestType == RequestType.Json)
+            if (requestType == RequestFormat.Json)
             {
                 return await CreateRedirectUrl(response);
             }

@@ -26,7 +26,7 @@ namespace DemoWebsite.Models
         /// <summary>
         /// the request type (json or xml)
         /// </summary>
-        public RequestType RequestType { get; set; }
+        public RequestFormat RequestType { get; set; }
 
         /// <summary>
         /// the default transaction type

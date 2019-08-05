@@ -15,9 +15,9 @@ namespace DemoWebsite.Models
         /// </summary>
         /// <param name="response"></param>
         /// <returns></returns>
-        public static PaymentResponse Parse(string response, RequestType type)
+        public static PaymentResponse Parse(string response, RequestFormat type)
         {
-            if (type == RequestType.Json)
+            if (type == RequestFormat.Json)
             {
                 return JsonConvert.DeserializeObject<PaymentResponse>(response);
             }

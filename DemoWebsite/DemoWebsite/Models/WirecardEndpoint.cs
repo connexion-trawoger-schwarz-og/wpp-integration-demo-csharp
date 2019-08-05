@@ -46,6 +46,10 @@ namespace DemoWebsite.Models
         /// the payment methods
         /// </summary>
         public HashSet<WirecardPayment> PaymentMethods { get; set; }
+
+        public string IpnSuccessNotificationUrl { get; set; }
+        public string IpnFailedNotificationUrl { get; set; }
+        public string IpnDefaultNotificationUrl { get; set; }
     }
 
 
