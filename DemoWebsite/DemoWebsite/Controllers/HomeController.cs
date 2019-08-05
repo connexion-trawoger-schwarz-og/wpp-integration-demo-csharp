@@ -271,17 +271,10 @@ namespace DemoWebsite.Controllers
             return await Task.FromResult(Content("Cancel"));
         }
 
-        public async Task<IActionResult> Ipn()
+        public async Task<IActionResult> Ipn([FromBody]PaymentResponse response)
         {
-            using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
-            {
-                string rawValue = await reader.ReadToEndAsync();
-                using (var sw = new StreamWriter($"{DateTime.Now:yyyyMMddHHmmss}.json"))
-                {
-                    sw.Write(rawValue);
-                }
-            }
-            return Ok();
+            return Content($"data receiveed: {response.Payment.CompletionTimeUtc}");
+            
         }
 
 

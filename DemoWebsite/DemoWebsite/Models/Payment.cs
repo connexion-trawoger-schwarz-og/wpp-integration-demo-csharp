@@ -41,25 +41,38 @@ namespace DemoWebsite.Models
         [JsonProperty(PropertyName = "transaction-state")]
         public string TransactionState { get; set; }
 
+
+        private string _CompletionTimeStamp;
         /// <summary>
         /// completion time
         /// </summary>
         [XmlElement(ElementName = "completion-time-stamp")]
         [JsonProperty(PropertyName = "completion-time-stamp")]
-        public long? CompletionTimeStamp { get; set; }
-
-        private DateTime? _CompletionTime;
-        public DateTime? CompletionTime
+        public string CompletionTimeStamp
         {
             get
             {
-                if (CompletionTimeStamp.HasValue && _CompletionTime == null)
-                {
-                    DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeMilliseconds(CompletionTimeStamp.Value);
-                    _CompletionTime = dateTimeOffset.UtcDateTime.ToLocalTime();
-                }
-                return _CompletionTime;
+                return _CompletionTimeStamp;
             }
+            set
+            {
+                _CompletionTimeStamp = value;
+                if (!DateTime.TryParse(value, out DateTime completionTime))
+                {
+                    DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(CompletionTimeStamp));
+                    CompletionTimeUtc = dateTimeOffset.UtcDateTime;
+                }
+                else
+                {
+                    CompletionTimeUtc = completionTime;
+                }
+            }
+        }
+
+        public DateTime? CompletionTimeUtc
+        {
+            get;
+            private set;
         }
 
         /// <summary>
