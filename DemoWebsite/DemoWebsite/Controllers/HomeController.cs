@@ -137,10 +137,9 @@ namespace DemoWebsite.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> GooglePay(GooglePaymentResponse data)
+        public async Task<IActionResult> GooglePay(string paymentToken)
         {
-            var sig = JsonConvert.SerializeObject(data.PaymentMethodData);
-            
+           
 
             var uri = new Uri("https://api-test.wirecard.com/engine/rest/payments/");
             var username = "70000-APITEST-AP";
@@ -169,7 +168,7 @@ namespace DemoWebsite.Controllers
                   <card>
                     <card-type>visa</card-type>
                   </card>
-                   <cryptogram-value>{sig}</cryptogram-value>
+                   <cryptogram-value>{_wirecardPaymentService.Base64Encode(paymentToken)}</cryptogram-value>
                     <cryptogram-type>google-pay</cryptogram-type>
                   </cryptogram>
                   <ip-address>127.0.0.1</ip-address>
@@ -255,19 +254,26 @@ namespace DemoWebsite.Controllers
         /// error response redirect
         /// </summary>
         /// <returns></returns>
-        public IActionResult Error()
+        public async Task<IActionResult> Error()
         {
-            return Content("Error");
+            return await Task.FromResult(Content("Error"));
         }
 
         /// <summary>
         /// cancel response redirect
         /// </summary>
         /// <returns></returns>
-        public IActionResult Cancel()
+        public async Task<IActionResult> Cancel()
         {
-            return Content("Cancel");
+            return await Task.FromResult(Content("Cancel"));
         }
+
+        public async Task<IActionResult> Ipn(IFormCollection data)
+        {
+
+            return await Task.FromResult(Ok());
+        }
+
 
         #region obsolte / old calls
 

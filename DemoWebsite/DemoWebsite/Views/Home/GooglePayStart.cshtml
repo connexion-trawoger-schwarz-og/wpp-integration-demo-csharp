@@ -227,12 +227,11 @@
          * @@see {@@link https://developers.google.com/pay/api/web/reference/object#PaymentData|PaymentData object reference}
          */
         function processPayment(paymentData) {
-            debugger;
             // show returned data in developer console for debugging
             console.log(paymentData);
             // @@todo pass payment token to your gateway to process payment
             paymentToken = paymentData.paymentMethodData.tokenizationData.token;
-            $.post("/home/GooglePay", { data: paymentData });
+            $.post("/home/GooglePay", { paymentToken });
         }
     </script>
     <script async

@@ -157,5 +157,8 @@ namespace DemoWebsite.Models
         [JsonProperty(PropertyName = "descriptor")]
         public string Descriptor { get; set; }
 
+        [JsonProperty(PropertyName = "notifications")]
+        public Notifications Notifications { get; set; }
+
     }
 }

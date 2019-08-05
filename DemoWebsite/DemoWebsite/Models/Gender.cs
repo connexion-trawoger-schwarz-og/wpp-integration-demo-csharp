@@ -1,12 +1,14 @@
 ﻿// Copyright (c) 2019 connexion OG / Roman Wienicke
 
+using System.Runtime.Serialization;
+
 namespace DemoWebsite.Models
 {
     public enum Gender
     {
-        [System.Runtime.Serialization.EnumMember(Value = "m")]
+        [EnumMember(Value = "m")]
         M,
-        [System.Runtime.Serialization.EnumMember(Value = "f")]
+        [EnumMember(Value = "f")]
         F
     }
 }
