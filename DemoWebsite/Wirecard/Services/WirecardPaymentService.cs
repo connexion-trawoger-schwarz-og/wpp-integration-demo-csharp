@@ -23,6 +23,8 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Primitives;
 
 namespace Wirecard.Services
 {
@@ -41,6 +43,8 @@ namespace Wirecard.Services
         /// </summary>
         private readonly IHttpContextAccessor _httpContextAccessor;
 
+        private readonly string _basePath;
+
         /// <summary>
         /// constructor
         /// </summary>
@@ -50,6 +54,21 @@ namespace Wirecard.Services
         {
             _wirecardConfiguration = wirecardOptions.Value;
             _httpContextAccessor = httpContextAccessor;
+        }
+
+
+        /// <summary>Initializes a new instance of the <see cref="T:Wirecard.Services.WirecardPaymentService"/> class.</summary>
+        /// <param name="pathToConfigFile">The path to configuration file.</param>
+        /// <param name="basePath">The base path.</param>
+        public WirecardPaymentService(string pathToConfigFile, string basePath)
+        {
+
+            var config = new ConfigurationBuilder()
+                .AddJsonFile(pathToConfigFile, optional: false, reloadOnChange: true)
+                .Build();
+            _wirecardConfiguration = new WirecardConfiguration();
+            config.GetSection("wirecard").Bind(_wirecardConfiguration);
+            _basePath = basePath;
         }
 
         /// <summary>
@@ -177,8 +196,8 @@ namespace Wirecard.Services
             }
 
             // create an absolute url
-            var request = _httpContextAccessor.HttpContext.Request;
-            return string.Concat(request.Scheme, "://", request.Host, "/", uri.ToString().TrimStart('/'));
+            return string.Concat(_basePath?.TrimEnd('/') ??
+                $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}", "/", uri.ToString().TrimStart('/'));
         }
 
         /// <summary>
@@ -224,6 +243,54 @@ namespace Wirecard.Services
 
             return redirect;
         }
+
+
+        public PaymentResponse GetPaymentResult(IFormCollection data)
+        {
+            return GetPaymentResult(data, data["eppresponse"] == StringValues.Empty ? RequestFormat.Json : RequestFormat.Xml);
+        }
+
+
+        /// <summary>Gets the payment result. 
+        /// Not fully implemented...
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <param name="format">The format.</param>
+        /// <returns>PaymentResponse.</returns>
+        public PaymentResponse GetPaymentResult(IFormCollection data, RequestFormat format)
+        {
+
+            string responseBase64 = ""; //, signatureAlgorithm, responseBase64, type, custom_css_url, locale;
+
+            switch (format)
+            {
+                case RequestFormat.Json:
+                    {
+                        //string signatureBase64 = data["response-signature-base64"];
+                        //string signatureAlgorithm = data["response-signature-altorithm"];
+                        responseBase64 = data["response-base64"];
+
+                    }
+                    break;
+                case RequestFormat.Xml:
+                    {
+                        //string type = data["psp_name"];
+                        //string custom_css_url = data["custom_css_url"];
+                        //string locale = data["locale"];
+                        responseBase64 = data["eppresponse"];
+                    }
+                    break;
+                case RequestFormat.JsonSigned:
+                    break;
+                case RequestFormat.FormUrlEndocded:
+                    break;
+                default:
+                    break;
+            }
+
+            return PaymentResponse.Parse(Base64Decode(responseBase64), format);
+        }
+
         /// <summary>
         /// Base64s the encode.
         /// </summary>
@@ -231,7 +298,7 @@ namespace Wirecard.Services
         /// <returns>System.String.</returns>
         public string Base64Encode(string plainText)
         {
-            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
+            var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
             return Convert.ToBase64String(plainTextBytes);
         }
 
@@ -243,7 +310,7 @@ namespace Wirecard.Services
         public string Base64Decode(string base64EncodedData)
         {
             var base64EncodedBytes = Convert.FromBase64String(base64EncodedData);
-            return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
+            return Encoding.UTF8.GetString(base64EncodedBytes);
         }
     }
 

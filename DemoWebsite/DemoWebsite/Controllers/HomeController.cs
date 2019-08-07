@@ -232,68 +232,35 @@ namespace DemoWebsite.Controllers
         /// <returns>System.String.</returns>
         public string Success(IFormCollection data)
         {
-            // data from elastc payment
-            if (data["eppresponse"] == StringValues.Empty)
-            {
-
-                string signatureBase64 = data["response-signature-base64"];
-                string signatureAlgorithm = data["response-signature-altorithm"];
-                string responseBase64 = data["response-base64"];
-                var signature = Encoding.UTF8.GetString(Convert.FromBase64String(signatureBase64));
-                var response = DecodeResponse(signatureBase64, signatureAlgorithm, responseBase64);
-
-                var payment = PaymentResponse.Parse(response, RequestFormat.Json);
-
-                return $"{response}";
-            }
-            // data from wirecard REST
-            else
-            {
-                string type = data["psp_name"];
-                string custom_css_url = data["custom_css_url"];
-                string locale = data["locale"];
-                string responseBase64 = data["eppresponse"];
-                string response = Encoding.UTF8.GetString(Convert.FromBase64String(responseBase64));
-
-                var payment = PaymentResponse.Parse(response, RequestFormat.Xml);
-
-                return $"{response}";
-            }
-
-
+            PaymentResponse response = _wirecardPaymentService.GetPaymentResult(data);
+          
+            return $"{response}";
 
 
         }
 
-        /// <summary>
-        /// decode wirecard response data
-        /// </summary>
-        /// <param name="signatureBase64">The signature base64.</param>
-        /// <param name="signatureAlgorithm">The signature algorithm.</param>
-        /// <param name="responseBase64">The response base64.</param>
-        /// <returns>System.String.</returns>
-        private string DecodeResponse(string signatureBase64, string signatureAlgorithm, string responseBase64)
-        {
-            var bytes = Convert.FromBase64String(responseBase64);
-            return Encoding.UTF8.GetString(bytes);
-        }
+        
 
         /// <summary>
         /// error response redirect
         /// </summary>
         /// <returns>Task&lt;IActionResult&gt;.</returns>
-        public async Task<IActionResult> Error()
+        public string Error(IFormCollection data)
         {
-            return await Task.FromResult(Content("Error"));
+            PaymentResponse response = _wirecardPaymentService.GetPaymentResult(data);
+
+            return $"{response}";
         }
 
         /// <summary>
         /// cancel response redirect
         /// </summary>
         /// <returns>Task&lt;IActionResult&gt;.</returns>
-        public async Task<IActionResult> Cancel()
+        public string Cancel(IFormCollection data)
         {
-            return await Task.FromResult(Content("Cancel"));
+            PaymentResponse response = _wirecardPaymentService.GetPaymentResult(data);
+
+            return $"{response}";
         }
 
         /// <summary>
