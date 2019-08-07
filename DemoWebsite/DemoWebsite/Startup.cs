@@ -11,8 +11,8 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
-using DemoWebsite.Models;
-using DemoWebsite.Services;
+//using DemoWebsite.Models;
+//using DemoWebsite.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -23,6 +23,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using Wirecard.Models;
+using Wirecard.Services;
 
 namespace DemoWebsite
 {

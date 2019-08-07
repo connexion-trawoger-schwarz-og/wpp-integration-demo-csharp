@@ -11,8 +11,8 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
-using DemoWebsite.Models;
-using DemoWebsite.Services;
+//using DemoWebsite.Models;
+//using DemoWebsite.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
@@ -25,6 +25,8 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Wirecard.Models;
+using Wirecard.Services;
 
 namespace DemoWebsite.Controllers
 {

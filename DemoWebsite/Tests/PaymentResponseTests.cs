@@ -1,11 +1,11 @@
 // Copyright (c) 2019 connexion OG / Roman Wienicke
-using DemoWebsite.Controllers;
-using DemoWebsite.Models;
+
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using System;
 using System.IO;
 using System.Linq;
+using Wirecard.Models;
 
 namespace Tests
 {
