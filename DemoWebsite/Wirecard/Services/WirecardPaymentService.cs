@@ -25,6 +25,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
+using System.Collections.Specialized;
 
 namespace Wirecard.Services
 {
@@ -247,6 +248,18 @@ namespace Wirecard.Services
 
         public PaymentResponse GetPaymentResult(IFormCollection data)
         {
+            var nameValueCollection = new NameValueCollection();
+
+            foreach (var key in data.Keys)
+            {
+                nameValueCollection.Add(key, data[key]);
+            }
+
+            return GetPaymentResult(nameValueCollection, data["eppresponse"] == StringValues.Empty ? RequestFormat.Json : RequestFormat.Xml);
+        }
+
+        public PaymentResponse GetPaymentResult(NameValueCollection data)
+        {
             return GetPaymentResult(data, data["eppresponse"] == StringValues.Empty ? RequestFormat.Json : RequestFormat.Xml);
         }
 
@@ -257,7 +270,7 @@ namespace Wirecard.Services
         /// <param name="data">The data.</param>
         /// <param name="format">The format.</param>
         /// <returns>PaymentResponse.</returns>
-        public PaymentResponse GetPaymentResult(IFormCollection data, RequestFormat format)
+        public PaymentResponse GetPaymentResult(NameValueCollection data, RequestFormat format)
         {
 
             string responseBase64 = ""; //, signatureAlgorithm, responseBase64, type, custom_css_url, locale;
@@ -312,6 +325,10 @@ namespace Wirecard.Services
             var base64EncodedBytes = Convert.FromBase64String(base64EncodedData);
             return Encoding.UTF8.GetString(base64EncodedBytes);
         }
+
+        
+
+       
     }
 
 
