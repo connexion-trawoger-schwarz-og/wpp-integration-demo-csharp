@@ -5,12 +5,14 @@ using NUnit.Framework;
 using System;
 using System.IO;
 using System.Linq;
+using System.Xml.Linq;
 using Wirecard.Models;
 
 namespace Tests
 {
     public class Tests
     {
+      
 
         /// <summary>
         /// simple tests for parsing of the result json
@@ -18,11 +20,12 @@ namespace Tests
         /// <param name="responseFile"></param>
         /// <param name="type"></param>
         ///  xmlns="http://www.elastic-payments.com/schema/payment"
-        [TestCase("paymentResponse_cc.json", "creditcard", RequestFormat.Json)]
-        [TestCase("paymentResponse_eps.json", "eps")]
-        [TestCase("paymentResponse_klarna.json", "sofortbanking", RequestFormat.Json)]
-        [TestCase("paymentResponse_paypal.json", "paypal", RequestFormat.Json)]
-        [TestCase("paymentResponse_klarna.xml", "sofortbanking", RequestFormat.Xml)]
+        //[TestCase("paymentResponse_cc.json", "creditcard", RequestFormat.Json)]
+        //[TestCase("paymentResponse_eps.json", "eps")]
+        //[TestCase("paymentResponse_klarna.json", "sofortbanking", RequestFormat.Json)]
+        //[TestCase("paymentResponse_paypal.json", "paypal", RequestFormat.Json)]
+        //[TestCase("paymentResponse_klarna.xml", "sofortbanking", RequestFormat.Xml)]
+        [TestCase("paymentResponse_google_error.xml", "google", RequestFormat.Xml)]
         public void ParsePaymentResponseTest(string responseFile, string payment, RequestFormat type)
         {
             string content = GetFileInStartupPath(responseFile);
@@ -50,6 +53,20 @@ namespace Tests
             DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeMilliseconds(timestamp);
             var date = dateTimeOffset.UtcDateTime.ToLocalTime();
             
+        }
+
+        [TestCase]
+        public void XmlResponseFailedTest() {
+            var xml = @"<payment xmlns=""http://www.elastic-payments.com/schema/payment"">
+              <transaction-state>failed</transaction-state>
+              <statuses>
+                <status code=""400.1031"" description=""Possible malformed request. Please check your input"" severity=""error"" />
+              </statuses>
+            </payment>
+            ";
+
+          
+
         }
     }
 }

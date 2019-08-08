@@ -201,6 +201,8 @@ namespace Wirecard.Services
                 $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}", "/", uri.ToString().TrimStart('/'));
         }
 
+       
+
         /// <summary>
         /// create the basic auth header
         /// </summary>

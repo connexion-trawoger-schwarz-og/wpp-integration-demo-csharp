@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<payment xmlns="http://www.elastic-payments.com/schema/payment">
+  <transaction-state>failed</transaction-state>
+  <statuses>
+    <status code="400.1031" description="Possible malformed request. Please check your input" severity="error" />
+  </statuses>
+</payment>

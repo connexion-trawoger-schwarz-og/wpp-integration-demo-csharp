@@ -13,6 +13,7 @@
 // ***********************************************************************
 using Newtonsoft.Json;
 using System;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 
 namespace Wirecard.Models
@@ -23,6 +24,17 @@ namespace Wirecard.Models
     [XmlRoot(ElementName = "payment", Namespace = "http://www.elastic-payments.com/schema/payment")]
     public class Payment
     {
+        public static Payment From(XDocument document)
+        {
+            XmlSerializer xmlSerializer = new XmlSerializer(typeof(Payment));
+
+            using (var reader = document.CreateReader())
+            {
+                return (Payment)xmlSerializer.Deserialize(reader);
+            }
+        }
+
+
         /// <summary>
         /// the transaction id
         /// </summary>
@@ -93,6 +105,7 @@ namespace Wirecard.Models
         /// Gets the completion time UTC.
         /// </summary>
         /// <value>The completion time UTC.</value>
+        [XmlIgnore]
         public DateTime? CompletionTimeUtc
         {
             get;

@@ -203,24 +203,32 @@ namespace DemoWebsite.Controllers
                   </payment-methods>
                 </payment>";
 
+            try
+            {
+                var client = new HttpClient();
 
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+                "Basic", Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes($"{username}:{password}")));
+                var response = await client.PostAsync(uri, new StringContent(request, Encoding.UTF8, "application/xml"));
 
-            var client = new HttpClient();
+                var responseData = await response.Content.ReadAsStringAsync();
+                var xDoc = XDocument.Parse(responseData);
+                var payment = Wirecard.Models.Payment.From(XDocument.Parse(responseData));
+
+                if (payment.TransactionState.Equals("success"))
+                {
+                    return Content("success");
+                }
+
+                return Content(xDoc.ToString());
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
             
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
-            "Basic", Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes($"{username}:{password}")));
-            var response = await client.PostAsync(uri, new StringContent(request, Encoding.UTF8, "application/xml"));
-
-            var responseData = await response.Content.ReadAsStringAsync();
-            var responseItem = XDocument.Parse(responseData);
-            XNamespace ns = "http://www.elastic-payments.com/schema/payment";
-
-            var redirect = responseItem.Root
-                .Element(ns + "payment-methods")
-                .Element(ns + "payment-method")
-                .Attribute("url").Value;
-
-            return Redirect(redirect);
 
 
         }

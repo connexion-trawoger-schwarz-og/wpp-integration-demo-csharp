@@ -23,6 +23,9 @@
     <None Update="IpnResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="paymentResponse_google_error.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="paymentResponse_klarna.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

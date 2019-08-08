@@ -37,12 +37,9 @@ namespace Wirecard.Models
 
 
             var doc = XDocument.Parse(response);
-            XmlSerializer xmlSerializer = new XmlSerializer(typeof(Payment));
-
-            using (var reader = doc.CreateReader())
-            {
-                return new PaymentResponse { Payment = (Payment)xmlSerializer.Deserialize(reader) };
-            }
+            
+            return new PaymentResponse { Payment = Payment.From(doc) };
+            
 
         }
 
