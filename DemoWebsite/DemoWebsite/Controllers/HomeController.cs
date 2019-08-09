@@ -182,6 +182,7 @@ namespace DemoWebsite.Controllers
                   <card>
                     <card-type>visa</card-type>
                   </card>
+                  <cryptogram>
                    <cryptogram-value>{_wirecardPaymentService.Base64Encode(paymentToken)}</cryptogram-value>
                     <cryptogram-type>google-pay</cryptogram-type>
                   </cryptogram>
@@ -202,14 +203,14 @@ namespace DemoWebsite.Controllers
 
                 var responseData = await response.Content.ReadAsStringAsync();
                 var xDoc = XDocument.Parse(responseData);
-                var payment = Wirecard.Models.Payment.From(XDocument.Parse(responseData));
-
+                var paymentResponse = new PaymentResponse { Payment = Wirecard.Models.Payment.From(XDocument.Parse(responseData)) };
                 
-                payment.ReturnUrl = string.Concat("/home/", payment.TransactionState.Equals("success") ? "success" : "error");
-
-                return Json(payment);
+                return Json(
+                    new { Payload = _wirecardPaymentService.Base64Encode(JsonConvert.SerializeObject(paymentResponse)),
+                        ReturnUrl = string.Concat("/home/", paymentResponse.Payment.TransactionState.Equals("success") ? "success" : "error")
+                    });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
                 throw;

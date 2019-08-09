@@ -236,11 +236,22 @@
         console.log(paymentData);
         // @@todo pass payment token to your gateway to process payment
         paymentToken = paymentData.paymentMethodData.tokenizationData.token;
-        $.post("/home/GooglePay", { paymentToken }, function (payment) {
-            console.log(payment);
-            location.href = payment.returnurl;
+        $.post("/home/GooglePay", { paymentToken }, function (paymentResponse) {
+            postResultToUrl(paymentResponse);
         });
     }
+
+    function postResultToUrl(paymentData) {
+        var $form = $("<form />");
+        $form.attr("action", paymentData.returnUrl);
+        $form.attr("method", "POST");
+        $form.append('<input type="hidden" name="response-base64" value="' + paymentData.payload + '" />');
+        console.log($form);
+        $("body").append($form);
+        $form.submit();
+    }
+
+ 
 </script>
 <script async
         src="https://pay.google.com/gp/p/js/pay.js"

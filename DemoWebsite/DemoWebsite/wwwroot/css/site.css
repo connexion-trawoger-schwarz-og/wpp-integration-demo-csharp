@@ -40,6 +40,10 @@ li {
         color: #fff;
      }
 
+.paymentButton {
+    margin: 1em 3em;
+}
+
 ul.green li {
     background: #07a10a;
     border: 1px solid #07a10a;
