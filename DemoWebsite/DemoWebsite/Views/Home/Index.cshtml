@@ -92,11 +92,7 @@
     <div class="information">
         work in progress...
     </div>
-    <ul>
-        <li>
-            <a asp-action="GooglePayStart">Google Pay →</a>
-        </li>
-    </ul>
+    <div id="googlePayContainer"></div>
 
     <h2><a name="ep">Elastic Payment</a></h2>
     <div class="information">
@@ -116,4 +112,8 @@
     </ul>
 
 </div>
+
+@section Scripts {
+    @await Html.PartialAsync("_GoogolePaymentScripts")
+}
 

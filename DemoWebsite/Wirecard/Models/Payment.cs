@@ -243,5 +243,9 @@ namespace Wirecard.Models
         [JsonProperty(PropertyName = "notifications")]
         public Notifications Notifications { get; set; }
 
+
+        [JsonProperty(PropertyName = "returnurl")]
+        [XmlIgnore]
+        public string ReturnUrl { get; set; }
     }
 }

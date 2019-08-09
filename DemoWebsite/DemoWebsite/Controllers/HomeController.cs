@@ -146,17 +146,6 @@ namespace DemoWebsite.Controllers
         }
 
         /// <summary>
-        /// Googles the pay start.
-        /// </summary>
-        /// <returns>IActionResult.</returns>
-        public IActionResult GooglePayStart()
-        {
-            return View();
-        }
-
-
-
-        /// <summary>
         /// Ealstic payment call for Google Pay / noch nicht komplett implementiert da Google Daten nötig sind (gleich wie bei Apple
         /// </summary>
         /// <param name="paymentToken">The payment token.</param>
@@ -215,12 +204,10 @@ namespace DemoWebsite.Controllers
                 var xDoc = XDocument.Parse(responseData);
                 var payment = Wirecard.Models.Payment.From(XDocument.Parse(responseData));
 
-                if (payment.TransactionState.Equals("success"))
-                {
-                    return Content("success");
-                }
+                
+                payment.ReturnUrl = string.Concat("/home/", payment.TransactionState.Equals("success") ? "success" : "error");
 
-                return Content(xDoc.ToString());
+                return Json(payment);
             }
             catch (Exception ex)
             {
@@ -278,198 +265,18 @@ namespace DemoWebsite.Controllers
         /// <returns>Task&lt;IActionResult&gt;.</returns>
         public async Task<IActionResult> Ipn([FromBody]PaymentResponse response)
         {
-            return Content($"data receiveed: {response.Payment.CompletionTimeUtc}");
+            return Content($"data recieved: {response.Payment.CompletionTimeUtc}");
             
         }
 
 
         #region obsolte / old calls
 
-        /// <summary>
-        /// legacy call for credit card payment
-        /// Testdaten:
-        /// Nr: 4200000000000018, CVC 018, validTo: 01/23
-        /// </summary>
-        /// <returns>Task&lt;IActionResult&gt;.</returns>
-        [Obsolete]
-        public async Task<IActionResult> CreditCard()
-        {
-            var uri = new Uri("https://wpp-test.wirecard.com/api/payment/register");
-            var username = "70000-APIDEMO-CARD";
-            var password = "ohysS0-dvfMx";
-            var merchantAccountId = "7a6dd74f-06ab-4f3f-a864-adc52687270a";
-            var requestId = Guid.NewGuid().ToString();
-            var paymentMethod = "creditcard";
+     
 
-            var request = $@"{{
-                  ""payment"": {{
-                                ""merchant-account-id"": {{
-                                    ""value"": ""{merchantAccountId}""
-                                }},
-                    ""request-id"": ""{requestId}"",
-                    ""transaction-type"": ""authorization"",
-                    ""requested-amount"": {{
-                                    ""value"": 10,
-                      ""currency"": ""EUR""
-                    }},
-                    ""account-holder"": {{
-                                    ""first-name"": ""John"",
-                      ""last-name"": ""Doe""
-                    }},
-                    ""payment-methods"": {{
-                                    ""payment-method"": [
-                                      {{
-                          ""name"": ""{paymentMethod}""
-                        }}
-                      ]
-                    }},
-                    ""success-redirect-url"": ""{GetRedirecturl(nameof(Success))}"",
-                    ""fail-redirect-url"": ""{GetRedirecturl(nameof(Error))}"",
-                    ""cancel-redirect-url"": ""{GetRedirecturl(nameof(Cancel))}""
-                  }}
-                }}";
+      
 
-            return await GetRedirectUrlFromWirecard(uri, username, password, request, RequestFormat.Json);
-
-        }
-
-        /// <summary>
-        /// legacy call for paypal
-        /// Testdaten:
-        /// Email buyer @wirecard.com
-        /// Password Einstein35
-        /// </summary>
-        /// <returns>Task&lt;IActionResult&gt;.</returns>
-        [Obsolete]
-        public async Task<IActionResult> PayPal()
-        {
-            var uri = new Uri("https://wpp-test.wirecard.com/api/payment/register");
-            var username = "70000-APITEST-AP";
-            var password = "qD2wzQ_hrc!8";
-            var merchantAccountId = "9abf05c1-c266-46ae-8eac-7f87ca97af28";
-            var requestId = Guid.NewGuid().ToString();
-            var paymentMethod = "paypal";
-            var request = $@"{{
-                  ""payment"": {{
-                                ""merchant-account-id"": {{
-                                    ""value"": ""{merchantAccountId}""
-                                }},
-                    ""request-id"": ""{requestId}"",
-                    ""transaction-type"": ""order"",
-                    ""requested-amount"": {{
-                                    ""value"": 1,
-                      ""currency"": ""EUR""
-                    }},
-                    ""account-holder"": {{
-                                    ""first-name"": ""John"",
-                      ""last-name"": ""Doe""
-                    }},
-                    ""payment-methods"": {{
-                                    ""payment-method"": [
-                                      {{
-                          ""name"": ""{paymentMethod}""
-                        }}
-                      ]
-                    }},
-                    ""success-redirect-url"": ""{GetRedirecturl(nameof(Success))}"",
-                    ""fail-redirect-url"": ""{GetRedirecturl(nameof(Error))}"",
-                    ""cancel-redirect-url"": ""{GetRedirecturl(nameof(Cancel))}""
-                  }}
-                }}";
-
-            return await GetRedirectUrlFromWirecard(uri, username, password, request, RequestFormat.Json);
-        }
-
-        /// <summary>
-        /// legacy call for IDeal
-        /// Testdaten:
-        /// Rabobank RABONL2U
-        /// ING INGBNL2A
-        /// </summary>
-        /// <returns>Task&lt;IActionResult&gt;.</returns>
-        [Obsolete]
-        public async Task<IActionResult> IDeal()
-        {
-            var uri = new Uri("https://wpp-test.wirecard.com/api/payment/register");
-            var username = "70000-APITEST-AP";
-            var password = "qD2wzQ_hrc!8";
-            var requestId = Guid.NewGuid().ToString();
-            var merchantAccountId = "adb45327-170a-460b-9810-9008e9772f5f";
-            var paymentMethod = "ideal";
-
-            var request = $@"{{
-                  ""payment"": {{
-                                ""merchant-account-id"": {{
-                                    ""value"": ""{merchantAccountId}""
-                                }},
-                    ""request-id"": ""{requestId}"",
-                    ""transaction-type"": ""debit"",
-                    ""requested-amount"": {{
-                                    ""value"": 1.23,
-                      ""currency"": ""EUR""
-                    }},
-                    ""payment-methods"": {{
-                                    ""payment-method"": [
-                                      {{
-                          ""name"": ""{paymentMethod}""
-                        }}
-                      ]
-                    }},
-                    ""success-redirect-url"": ""{GetRedirecturl(nameof(Success))}"",
-                    ""fail-redirect-url"": ""{GetRedirecturl(nameof(Error))}"",
-                    ""cancel-redirect-url"": ""{GetRedirecturl(nameof(Cancel))}""
-                  }}
-                }}";
-
-
-            return await GetRedirectUrlFromWirecard(uri, username, password, request, RequestFormat.Json);
-
-        }
-
-        /// <summary>
-        /// legacy call for Sofortüberweisung / Klarna
-        /// TestDaten:
-        /// BIC: Deutschland / SFRTDE20XXX
-        /// Kontonummer: 88888888
-        /// </summary>
-        /// <returns>Task&lt;IActionResult&gt;.</returns>
-        public async Task<IActionResult> Klarna()
-        {
-            var uri = new Uri("https://wpp-test.wirecard.com/api/payment/register");
-            var username = "70000-APITEST-AP";
-            var password = "qD2wzQ_hrc!8";
-            var merchantAccountId = "f19d17a2-01ae-11e2-9085-005056a96a54";
-            var requestId = Guid.NewGuid().ToString();
-            var paymentMethod = "sofortbanking";
-
-            var request = $@"{{
-                  ""payment"": {{
-                                ""merchant-account-id"": {{
-                                    ""value"": ""{merchantAccountId}""
-                                }},
-                    ""request-id"": ""{requestId}"",
-                    ""transaction-type"": ""debit"",
-                    ""requested-amount"": {{
-                                    ""value"": 1.23,
-                      ""currency"": ""EUR""
-                    }},
-                    ""payment-methods"": {{
-                                    ""payment-method"": [
-                                      {{
-                          ""name"": ""{paymentMethod}""
-                        }}
-                      ]
-                    }},
-                    ""descriptor"": ""test"",
-                    ""success-redirect-url"": ""{GetRedirecturl(nameof(Success))}"",
-                    ""fail-redirect-url"": ""{GetRedirecturl(nameof(Error))}"",
-                    ""cancel-redirect-url"": ""{GetRedirecturl(nameof(Cancel))}""
-                  }}
-                }}";
-
-
-            return await GetRedirectUrlFromWirecard(uri, username, password, request, RequestFormat.Json);
-        }
+      
 
         /// <summary>
         /// elastic payment call for Sofortüberweisung / Klarna
@@ -504,58 +311,7 @@ namespace DemoWebsite.Controllers
             return await GetRedirectUrlFromWirecard(uri, username, password, request, RequestFormat.Xml);
         }
 
-        /// <summary>
-        /// legacy call for EPS
-        /// Testdaten:
-        /// Bank: Ärzte- und Apotheker Bank BWFBATW1XXX
-        /// Just click to continue - no input needed.
-        /// </summary>
-        /// <returns>Task&lt;IActionResult&gt;.</returns>
-
-        public async Task<IActionResult> Eps()
-        {
-
-            var uri = new Uri("https://wpp-test.wirecard.com/api/payment/register");
-            var username = "16390-testing";
-            var password = "3!3013=D3fD8X7";
-            var merchantAccountId = "1f629760-1a66-4f83-a6b4-6a35620b4a6d";
-            var requestId = Guid.NewGuid().ToString();
-            var paymentMethod = "eps";
-
-            var request = $@"{{
-                  ""payment"": {{
-                                ""merchant-account-id"": {{
-                                    ""value"": ""{merchantAccountId}""
-                                }},
-                    ""request-id"": ""{requestId}"",
-                    ""transaction-type"": ""debit"",
-                    ""requested-amount"": {{
-                        ""value"": 10,
-                        ""currency"": ""EUR""
-                    }},
-                    ""account-holder"": {{
-                        ""first-name"": ""John"",
-                        ""last-name"": ""Doe""
-                    }},
-                    ""payment-methods"": {{
-                                    ""payment-method"": [
-                                      {{
-                          ""name"": ""{paymentMethod}""
-                        }}
-                      ]
-                    }},
-                    ""success-redirect-url"": ""{GetRedirecturl(nameof(Success))}"",
-                    ""fail-redirect-url"": ""{GetRedirecturl(nameof(Error))}"",
-                    ""cancel-redirect-url"": ""{GetRedirecturl(nameof(Cancel))}""
-                  }}
-                }}";
-
-            return await GetRedirectUrlFromWirecard(uri, username, password, request, RequestFormat.Json);
-
-
-        }
-
-
+      
         /// <summary>
         /// legacy method for getting url from wirecard
         /// </summary>
@@ -649,88 +405,9 @@ namespace DemoWebsite.Controllers
         #endregion
     }
 
-    /// <summary>
-    /// Class GooglePaymentResponse.
-    /// </summary>
-    public class GooglePaymentResponse
-    {
-        /// <summary>
-        /// Gets or sets the API version minor.
-        /// </summary>
-        /// <value>The API version minor.</value>
-        public int ApiVersionMinor { get; set; }
-        /// <summary>
-        /// Gets or sets the API version.
-        /// </summary>
-        /// <value>The API version.</value>
-        public int ApiVersion { get; set; }
-        /// <summary>
-        /// Gets or sets the payment method data.
-        /// </summary>
-        /// <value>The payment method data.</value>
-        public PaymentMethodData PaymentMethodData { get; set; }
-    }
+   
 
-    /// <summary>
-    /// Class PaymentMethodData.
-    /// </summary>
-    public class PaymentMethodData
-    {
-        /// <summary>
-        /// Gets or sets the description.
-        /// </summary>
-        /// <value>The description.</value>
-        public string Description { get; set; }
-        /// <summary>
-        /// Gets or sets the tokenization data.
-        /// </summary>
-        /// <value>The tokenization data.</value>
-        public TokenizationData TokenizationData { get; set; }
-        /// <summary>
-        /// Gets or sets the type.
-        /// </summary>
-        /// <value>The type.</value>
-        public string Type { get; set; }
-        /// <summary>
-        /// Gets or sets the information.
-        /// </summary>
-        /// <value>The information.</value>
-        public Info Info { get; set; }
-    }
+   
 
-    /// <summary>
-    /// Class Info.
-    /// </summary>
-    public class Info
-    {
-        /// <summary>
-        /// Gets or sets the card network.
-        /// </summary>
-        /// <value>The card network.</value>
-        public string CardNetwork { get; set; }
-        /// <summary>
-        /// Gets or sets the card details.
-        /// </summary>
-        /// <value>The card details.</value>
-        public string CardDetails { get; set; }
-    }
-
-    /// <summary>
-    /// Class TokenizationData.
-    /// </summary>
-    public class TokenizationData
-    {
-        /// <summary>
-        /// Gets or sets the type.
-        /// </summary>
-        /// <value>The type.</value>
-        public string Type { get; set; }
-        /// <summary>
-        /// Gets or sets the token.
-        /// </summary>
-        /// <value>The token.</value>
-        public string Token { get; set; }
-
-       
-    }
+   
 }
