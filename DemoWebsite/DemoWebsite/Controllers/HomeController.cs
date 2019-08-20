@@ -103,7 +103,7 @@ namespace DemoWebsite.Controllers
                 EndpointName = endpointName,
             };
 
-            return Redirect(await _wirecardPaymentService.GetRedirectUrlFromWirecard(paymentInfo));
+            return Redirect(await _wirecardPaymentService.GetRedirectUrlFromWirecardAsync(paymentInfo));
         }
 
 

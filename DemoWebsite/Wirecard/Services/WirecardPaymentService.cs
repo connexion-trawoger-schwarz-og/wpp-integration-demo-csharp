@@ -26,6 +26,7 @@ using System.Xml.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 using System.Collections.Specialized;
+using System.Net;
 
 namespace Wirecard.Services
 {
@@ -53,6 +54,8 @@ namespace Wirecard.Services
         /// <param name="httpContextAccessor">The HTTP context accessor.</param>
         public WirecardPaymentService(IOptions<WirecardConfiguration> wirecardOptions, IHttpContextAccessor httpContextAccessor)
         {
+          
+
             _wirecardConfiguration = wirecardOptions.Value;
             _httpContextAccessor = httpContextAccessor;
         }
@@ -78,8 +81,10 @@ namespace Wirecard.Services
         /// <param name="paymentInfo">The payment information.</param>
         /// <returns>Task&lt;System.String&gt;.</returns>
         /// <exception cref="Exception">Create redirect url failed: {await response.Content.ReadAsStringAsync()}{Environment.NewLine}</exception>
-        public async Task<string> GetRedirectUrlFromWirecard(PaymentInfo paymentInfo)
+        public async Task<string> GetRedirectUrlFromWirecardAsync(PaymentInfo paymentInfo)
         {
+            // set TLS Secuity
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11;
             // http client
             var client = new HttpClient();
 
@@ -105,11 +110,49 @@ namespace Wirecard.Services
             // extract redirect url from response
             if (paymentMethod.RequestType == RequestFormat.Json)
             {
-                return await CreateRedirectUrlJson(response);
+                return await CreateRedirectUrlJsonAsync(response);
             }
             else
             {
-                return await CreateRedirectUrlXml(response);
+                return await CreateRedirectUrlXmlAsync(response);
+            }
+        }
+
+        public string GetRedirectUrlFromWirecard(PaymentInfo paymentInfo)
+        {
+            // set TLS Secuity
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11;
+            // http client
+            var client = new HttpClient();
+
+            // get endpoint and payment method
+            var endpoint = _wirecardConfiguration.GetEndpoint(paymentInfo.EndpointName);
+            var paymentMethod = endpoint.GetPaymentMethod(paymentInfo.PaymentName);
+            client.DefaultRequestHeaders.Authorization = CreateAuthenticationHeader(paymentMethod.Username, paymentMethod.Password);
+
+            // set the request type
+            var contentType = $"application/{paymentMethod.RequestType.ToString().ToLower()}";
+            // create the payload for the wirecard rest request
+            var payload = CreatePayload(paymentInfo, endpoint, paymentMethod);
+            // get the response url from wirecard
+            var response = client.PostAsync(endpoint.Uri, new StringContent(payload, Encoding.UTF8, contentType))
+                .GetAwaiter().GetResult();
+
+            // there was a problem and the request was not successfull
+            if (!response.IsSuccessStatusCode)
+            {
+                // throw exception with responese data
+                throw new Exception($"Create redirect url failed: {response.Content.ReadAsStringAsync().GetAwaiter().GetResult()}{Environment.NewLine}");
+            }
+
+            // extract redirect url from response
+            if (paymentMethod.RequestType == RequestFormat.Json)
+            {
+                return CreateRedirectUrlJson(response);
+            }
+            else
+            {
+                return CreateRedirectUrlXml(response);
             }
         }
 
@@ -220,9 +263,17 @@ namespace Wirecard.Services
         /// </summary>
         /// <param name="httpResponseMessage">The HTTP response message.</param>
         /// <returns>Task&lt;System.String&gt;.</returns>
-        private async Task<string> CreateRedirectUrlJson(HttpResponseMessage httpResponseMessage)
+        private async Task<string> CreateRedirectUrlJsonAsync(HttpResponseMessage httpResponseMessage)
         {
             var responseData = await httpResponseMessage.Content.ReadAsStringAsync();
+            JObject json = JObject.Parse(responseData);
+            var redirect = json.Value<string>("payment-redirect-url");
+            return redirect;
+        }
+
+        private string CreateRedirectUrlJson(HttpResponseMessage httpResponseMessage)
+        {
+            var responseData = httpResponseMessage.Content.ReadAsStringAsync().GetAwaiter().GetResult();
             JObject json = JObject.Parse(responseData);
             var redirect = json.Value<string>("payment-redirect-url");
             return redirect;
@@ -233,7 +284,7 @@ namespace Wirecard.Services
         /// </summary>
         /// <param name="httpResponseMessage">The HTTP response message.</param>
         /// <returns>Task&lt;System.String&gt;.</returns>
-        private async Task<string> CreateRedirectUrlXml(HttpResponseMessage httpResponseMessage)
+        private async Task<string> CreateRedirectUrlXmlAsync(HttpResponseMessage httpResponseMessage)
         {
             var responseData = await httpResponseMessage.Content.ReadAsStringAsync();
             var responseItem = XDocument.Parse(responseData);
@@ -247,6 +298,19 @@ namespace Wirecard.Services
             return redirect;
         }
 
+        private string CreateRedirectUrlXml(HttpResponseMessage httpResponseMessage)
+        {
+            var responseData = httpResponseMessage.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            var responseItem = XDocument.Parse(responseData);
+            XNamespace ns = "http://www.elastic-payments.com/schema/payment";
+
+            var redirect = responseItem.Root
+                .Element(ns + "payment-methods")
+                .Element(ns + "payment-method")
+                .Attribute("url").Value;
+
+            return redirect;
+        }
 
         public PaymentResponse GetPaymentResult(IFormCollection data)
         {
