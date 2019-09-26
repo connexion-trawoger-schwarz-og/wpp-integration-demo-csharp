@@ -80,7 +80,7 @@ namespace DemoWebsite
             });
 
             services
-               .AddMvc()
+               .AddMvc(o => o.EnableEndpointRouting = false)
                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
