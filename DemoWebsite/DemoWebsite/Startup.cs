@@ -25,6 +25,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using Wirecard.Models;
 using Wirecard.Services;
+using Microsoft.Extensions.Hosting;
+using Serilog;
 
 namespace DemoWebsite
 {
@@ -43,7 +45,7 @@ namespace DemoWebsite
         /// startup  test
         /// </summary>
         /// <param name="env">The env.</param>
-        public Startup(IHostingEnvironment env)
+        public Startup(IHostEnvironment env)
         {
 
             // add used configuration files
@@ -80,8 +82,8 @@ namespace DemoWebsite
             });
 
             services
-               .AddMvc(o => o.EnableEndpointRouting = false)
-               .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+               .AddMvc(o => o.EnableEndpointRouting = false);
+               //.SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -90,8 +92,10 @@ namespace DemoWebsite
         /// </summary>
         /// <param name="app">The application.</param>
         /// <param name="env">The env.</param>
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostEnvironment env)
         {
+            app.UseSerilogRequestLogging();
+
             var defaultDateCulture = "de-AT";
             var ci = new CultureInfo(defaultDateCulture);
             ci.NumberFormat.NumberDecimalSeparator = ",";

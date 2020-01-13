@@ -16,6 +16,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -42,16 +43,18 @@ namespace DemoWebsite.Controllers
         /// injected wirecard payment service
         /// </summary>
         private readonly WirecardPaymentService _wirecardPaymentService;
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IWebHostEnvironment _hostingEnvironment;
+        private readonly ILogger<HomeController> _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HomeController"/> class.
         /// </summary>
         /// <param name="wirecardPaymentService">The wirecard payment service.</param>
-        public HomeController(WirecardPaymentService wirecardPaymentService, IHostingEnvironment hostingEnvironment)
+        public HomeController(WirecardPaymentService wirecardPaymentService, IWebHostEnvironment hostingEnvironment, ILogger<HomeController> logger)
         {
             _wirecardPaymentService = wirecardPaymentService;
             _hostingEnvironment = hostingEnvironment;
+            _logger = logger;
         }
 
         /// <summary>
@@ -105,7 +108,7 @@ namespace DemoWebsite.Controllers
                 PaymentName = paymentName,
                 EndpointName = endpointName,
             };
-
+            _logger.LogInformation("Payment started", paymentName, paymentInfo.RequestId);
             return Redirect(await _wirecardPaymentService.GetRedirectUrlFromWirecardAsync(paymentInfo));
         }
 
@@ -231,8 +234,10 @@ namespace DemoWebsite.Controllers
         /// <returns>System.String.</returns>
         public string Success(IFormCollection data)
         {
+           
+
             PaymentResponse response = _wirecardPaymentService.GetPaymentResult(data);
-          
+            _logger.LogInformation("Payment Success", response.Payment.RequestId);
             return $"{response}";
 
 
@@ -246,8 +251,9 @@ namespace DemoWebsite.Controllers
         /// <returns>Task&lt;IActionResult&gt;.</returns>
         public string Error(IFormCollection data)
         {
-            PaymentResponse response = _wirecardPaymentService.GetPaymentResult(data);
 
+            PaymentResponse response = _wirecardPaymentService.GetPaymentResult(data);
+            _logger.LogInformation("Payment Error", response.Payment.RequestId);
             return $"{response}";
         }
 
@@ -258,7 +264,7 @@ namespace DemoWebsite.Controllers
         public string Cancel(IFormCollection data)
         {
             PaymentResponse response = _wirecardPaymentService.GetPaymentResult(data);
-
+            _logger.LogInformation("Payment Cancel", response.Payment.RequestId);
             return $"{response}";
         }
 
@@ -271,6 +277,8 @@ namespace DemoWebsite.Controllers
         {
             string bodyContent = await new StreamReader(Request.Body).ReadToEndAsync();
             var response = PaymentResponse.Parse(bodyContent, RequestFormat.Json);
+            _logger.LogInformation("Payment Ipn Response", response.Payment.RequestId, response.Payment.TransactionState);
+
             return Ok();
         }
 
@@ -333,7 +341,6 @@ namespace DemoWebsite.Controllers
         /// <param name="payload">The payload.</param>
         /// <param name="requestType">Type of the request.</param>
         /// <returns>Task&lt;IActionResult&gt;.</returns>
-        [Obsolete]
         private async Task<IActionResult> GetRedirectUrlFromWirecard(Uri uri, string username, string password, string payload, RequestFormat requestType)
         {
             var client = new HttpClient();
@@ -397,18 +404,16 @@ namespace DemoWebsite.Controllers
         /// <param name="username">The username.</param>
         /// <param name="password">The password.</param>
         /// <returns>AuthenticationHeaderValue.</returns>
-        [Obsolete]
         private AuthenticationHeaderValue CreateAuthenticationHeader(string username, string password)
         {
             return new AuthenticationHeaderValue(
-            "Basic", Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes($"{username}:{password}")));
+            "Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}")));
         }
         /// <summary>
         /// Gets the redirecturl.
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns>System.String.</returns>
-        [Obsolete]
         private string GetRedirecturl(string path)
         {
             return string.Concat(Request.Scheme, "://", Request.Host, "/", "home", "/", path);
