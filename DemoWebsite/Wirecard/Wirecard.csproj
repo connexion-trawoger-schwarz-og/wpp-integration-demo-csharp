@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <PackageId>WirecardPayment</PackageId>
+    <Version>0.9.0</Version>
+    <Authors>Roman Wienicke</Authors>
+    <Company>conenxion OG</Company>
+    <Product>Wirecard Payment for .net</Product>
+    <Description>.net implementation for Wirecard Payment Page (WPP)</Description>
   </PropertyGroup>
 
   <ItemGroup>
