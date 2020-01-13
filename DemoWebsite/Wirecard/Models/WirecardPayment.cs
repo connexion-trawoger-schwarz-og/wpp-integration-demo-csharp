@@ -39,6 +39,12 @@ namespace Wirecard.Models
         /// </summary>
         /// <value>The merchant account identifier.</value>
         public string MerchantAccountId { get; set; }
+
+        /// <summary>
+        /// the merchant account id for wirecard and this payment method
+        /// </summary>
+        /// <value>The merchant account identifier.</value>
+        public string MerchantAccountSecret { get; set; }
         /// <summary>
         /// the request type (json or xml)
         /// </summary>
@@ -51,6 +57,8 @@ namespace Wirecard.Models
         /// </summary>
         /// <value>The default type of the transaction.</value>
         public TransactionType DefaultTransactionType { get; set; }
+
+       
 
     }
 

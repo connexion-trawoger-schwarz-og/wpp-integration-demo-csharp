@@ -47,6 +47,7 @@ namespace Wirecard.Models
         /// the payment response
         /// </summary>
         /// <value>The payment.</value>
+        [JsonProperty(PropertyName = "payment")]
         public Payment Payment { get; set; }
 
 

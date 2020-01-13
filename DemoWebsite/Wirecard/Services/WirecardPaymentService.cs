@@ -244,7 +244,17 @@ namespace Wirecard.Services
                 $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}", "/", uri.ToString().TrimStart('/'));
         }
 
-       
+        public PaymentResponse GetIpnPaymentResult(PaymentResponse response)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<PaymentResponse> GetIpnPaymentResultAsync(PaymentResponse response)
+        {
+            throw new NotImplementedException();
+        }
+
+
 
         /// <summary>
         /// create the basic auth header

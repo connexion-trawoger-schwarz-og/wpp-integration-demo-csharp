@@ -13,6 +13,7 @@
 // ***********************************************************************
 //using DemoWebsite.Models;
 //using DemoWebsite.Services;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
@@ -41,14 +42,16 @@ namespace DemoWebsite.Controllers
         /// injected wirecard payment service
         /// </summary>
         private readonly WirecardPaymentService _wirecardPaymentService;
+        private readonly IHostingEnvironment _hostingEnvironment;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HomeController"/> class.
         /// </summary>
         /// <param name="wirecardPaymentService">The wirecard payment service.</param>
-        public HomeController(WirecardPaymentService wirecardPaymentService)
+        public HomeController(WirecardPaymentService wirecardPaymentService, IHostingEnvironment hostingEnvironment)
         {
             _wirecardPaymentService = wirecardPaymentService;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         /// <summary>
@@ -264,13 +267,21 @@ namespace DemoWebsite.Controllers
         /// </summary>
         /// <param name="response">The response.</param>
         /// <returns>Task&lt;IActionResult&gt;.</returns>
-        public async Task<IActionResult> Ipn([FromBody]PaymentResponse response)
+        public async Task<IActionResult> Ipn()
         {
-            return Content($"data recieved: {response.Payment.CompletionTimeUtc}");
-            
+            string bodyContent = await new StreamReader(Request.Body).ReadToEndAsync();
+            var response = PaymentResponse.Parse(bodyContent, RequestFormat.Json);
+            return Ok();
         }
 
 
+        public async Task<IActionResult> IpnTest()
+        {
+            string bodyContent = await new StreamReader(Request.Body).ReadToEndAsync();
+            System.IO.File.WriteAllText($"{_hostingEnvironment.WebRootPath}\\{DateTime.Now:yyyyMMdd_HHmmss}.txt", bodyContent);
+            return Ok();
+        }
+       
         #region obsolte / old calls
 
      
