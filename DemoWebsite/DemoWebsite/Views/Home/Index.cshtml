@@ -1,6 +1,6 @@
 ﻿@* Copyright (c) 2019 connexion OG / Roman Wienicke *@
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Connexion Wirecard Payment Demo Page";
 }
 
 <h1>Payment Selection</h1>
@@ -40,6 +40,15 @@
                 </td>
             </tr>
             <tr>
+                <td>Creditcard 3D</td>
+                <td>
+                    card nr.: 4012000300001003<br />
+                    CVC-code: 003<br />
+                    valid to: 01/23<br />
+                    Password AVS: wirecard
+                </td>
+            </tr>
+            <tr>
                 <td>Paypal</td>
                 <td>
                     email: buyer@wirecard.com<br />
@@ -72,6 +81,9 @@
     <ul>
         <li>
             <a asp-action="Payment" asp-route-endpointName="PaymentPageV2" asp-route-paymentName="creditcard">CreditCard →</a>
+        </li>
+        <li>
+            <a asp-action="Payment" asp-route-endpointName="PaymentPageV2"  asp-route-paymentName="creditcard3d" asp-route-typeName="creditcard">CreditCard 3D →</a>
         </li>
         <li>
             <a asp-action="Payment" asp-route-endpointName="PaymentPageV2" asp-route-paymentName="paypal">PayPal →</a>

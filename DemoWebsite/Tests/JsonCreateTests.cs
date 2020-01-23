@@ -63,7 +63,26 @@ namespace Tests
 
         }
 
+
+        [TestCase()]
+        public void EnumConvertTests()
+        {
+            var actual = JsonConvert.SerializeObject(ShippingMethod.OtherAddressDelivery);
+            var expected = "\"other_address_delivery\"";
+            Assert.AreEqual(actual, expected);
+
+            var shipping = new Shipping {
+                ShippingMethod = ShippingMethod.DigitalGoods
+            };
+
+            var test = JsonConvert.SerializeObject(shipping);
+        }
+
+        [TestCase("cnxtest-1ccc9cd7-b6d4-4b39-b638-f072424f5ff9-check-payer-response.txt")]
+        public void IPNStatus(string requestId)
+        {
+            var test = requestId.Substring(0, 44);
+        }
+
     }
-
-
 }

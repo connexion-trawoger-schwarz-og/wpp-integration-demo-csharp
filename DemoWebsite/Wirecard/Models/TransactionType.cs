@@ -29,10 +29,7 @@ namespace Wirecard.Models
         /// <summary>
         /// order is charged from the account
         /// </summary>
-        Order
-
+        Order,
+        Purchase
     }
-
-
-
 }

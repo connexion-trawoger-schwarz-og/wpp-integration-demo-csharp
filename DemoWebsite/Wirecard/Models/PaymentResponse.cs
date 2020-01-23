@@ -22,6 +22,7 @@ namespace Wirecard.Models
     /// </summary>
     public class PaymentResponse
     {
+
         /// <summary>
         /// parse of response string
         /// </summary>
@@ -37,10 +38,15 @@ namespace Wirecard.Models
 
 
             var doc = XDocument.Parse(response);
-            
-            return new PaymentResponse { Payment = Payment.From(doc) };
-            
 
+            return new PaymentResponse { Payment = Payment.From(doc) };
+
+
+        }
+
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
         }
 
         /// <summary>

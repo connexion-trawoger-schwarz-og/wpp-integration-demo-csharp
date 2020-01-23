@@ -44,11 +44,27 @@ namespace Wirecard.Models
         [JsonProperty(PropertyName = "phone")]
         public string Phone { get; set; }
 
+
+        /// <summary>
+        /// Gets or sets the phone.
+        /// </summary>
+        /// <value>The phone.</value>
+        [JsonProperty(PropertyName = "email")]
+        public string Email { get; set; }
+
         /// <summary>
         /// Gets or sets the address.
         /// </summary>
         /// <value>The address.</value>
         [JsonProperty(PropertyName = "address")]
         public Address Address { get; set; }
+
+        /// <summary>
+        /// Gets or sets the shipping method.
+        /// </summary>
+        /// <value>The shipping method.</value>
+        [JsonProperty(PropertyName = "shipping-method")]
+        public ShippingMethod ShippingMethod { get; set; }
     }
+
 }

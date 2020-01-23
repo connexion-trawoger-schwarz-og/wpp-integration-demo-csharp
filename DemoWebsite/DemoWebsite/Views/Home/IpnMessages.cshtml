@@ -1,0 +1,16 @@
+﻿
+@model string[]
+@* Copyright (c) 2019 connexion OG / Roman Wienicke *@
+
+<h1>Ipn Messages for @ViewData["responseId"]</h1>
+<div>
+    <ul>
+        @foreach (var item in Model)
+        {
+        <li class="fileLink">
+            <a target="_blank" href="/home/IpnMessage/@System.IO.Path.GetFileName(item)">@System.IO.Path.GetFileName(item)</a>
+        </li>
+        }
+
+    </ul>
+</div>

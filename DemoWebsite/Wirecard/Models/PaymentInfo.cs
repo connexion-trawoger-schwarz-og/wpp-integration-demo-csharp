@@ -50,6 +50,15 @@ namespace Wirecard.Models
         /// </summary>
         /// <value>The name of the payment.</value>
         public string PaymentName { get; set; }
+
+        /// <summary>
+        /// The payment type for Wirecard.
+        /// If empty <see cref="PaymentName"/> is used for type
+        /// e.g. creditcard vs. creditcard3d / 3d name is creditcard3d but type is creditcard
+        /// </summary>
+        /// <value>The name of the type.</value>
+        public string TypeName { get; set; }
+
         /// <summary>
         /// the endpointname from config settings
         /// </summary>
@@ -61,8 +70,7 @@ namespace Wirecard.Models
         /// </summary>
         /// <value>The type of the transaction.</value>
         public TransactionType? TransactionType { get; set; }
-
-
+       
     }
 
 

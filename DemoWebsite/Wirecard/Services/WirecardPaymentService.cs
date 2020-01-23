@@ -182,7 +182,7 @@ namespace Wirecard.Services
                     PaymentMethods = new PaymentMethods
                     {
                         PaymentMethod = new PaymentMethod[] {
-                            new PaymentMethod { Name = paymentMethod.Name }
+                            new PaymentMethod { Name = paymentInfo.TypeName ?? paymentMethod.Name }
                         }
                     },
                     SuccessRedirectUrl = GetRedirecturl(endpoint.SuccessRedirectUrl),

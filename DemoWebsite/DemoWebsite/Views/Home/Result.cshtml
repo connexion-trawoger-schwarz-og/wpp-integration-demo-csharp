@@ -1,0 +1,15 @@
+﻿@using Newtonsoft.Json
+@model Wirecard.Models.PaymentResponse
+@* Copyright (c) 2019 connexion OG / Roman Wienicke *@
+
+<h1>@ViewData["Title"]</h1>
+<div>
+    <h2>JSON Result:</h2>
+    <a href="/" class="backlink">back to selection...</a>
+
+    <a target="_blank" href="IpnMessages/@Model.Payment.RequestId" class="backlink">view data ...</a>
+    <pre class="information">
+@JsonConvert.SerializeObject(Model, Formatting.Indented);
+    </pre>
+    <a href="/" class="backlink">back to selection...</a>
+</div>

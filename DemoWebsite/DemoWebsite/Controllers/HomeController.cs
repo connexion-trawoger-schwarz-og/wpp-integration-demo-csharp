@@ -45,6 +45,7 @@ namespace DemoWebsite.Controllers
         private readonly WirecardPaymentService _wirecardPaymentService;
         private readonly IWebHostEnvironment _hostingEnvironment;
         private readonly ILogger<HomeController> _logger;
+        private string _filePath;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HomeController"/> class.
@@ -78,14 +79,18 @@ namespace DemoWebsite.Controllers
         /// paypal:  email: buyer @wirecard.com, password: Einstein35
         /// iDeal: bank: Rabobank RABONL2U -or-  ING INGBNL2A
         /// sofortbanking: country: Deutschland, BIC: SFRTDE20XXX, accountNr.: 88888888
-        public async Task<IActionResult> Payment(string endpointName, string paymentName)
+        public async Task<IActionResult> Payment(string endpointName, string paymentName, string typeName)
         {
             // setup for demo payment call
             var paymentInfo = new PaymentInfo
             {
-                AccountHolder = new AccountHolder { FirstName = "John", LastName = "Doe",
-                    Address = new Address {
-                        City ="Wien",
+                AccountHolder = new AccountHolder
+                {
+                    FirstName = "John",
+                    LastName = "Doe",
+                    Address = new Address
+                    {
+                        City = "Wien",
                         PostalCode = "1011",
                         Country = "AT",
                         Street1 = "Strasse 1"
@@ -101,12 +106,14 @@ namespace DemoWebsite.Controllers
                         PostalCode = "1017",
                         Country = "AT",
                         Street1 = "Strasse 2"
-                    }
+                    },
+                    ShippingMethod = ShippingMethod.OtherVerified
                 },
                 RequestedAmount = new RequestedAmount { Currency = Currency.EUR, Value = 1.23m },
-                RequestId = Guid.NewGuid().ToString(),
+                RequestId = $"cnxtest-{Guid.NewGuid()}",
                 PaymentName = paymentName,
                 EndpointName = endpointName,
+                TypeName = typeName
             };
             _logger.LogInformation("Payment started", paymentName, paymentInfo.RequestId);
             return Redirect(await _wirecardPaymentService.GetRedirectUrlFromWirecardAsync(paymentInfo));
@@ -159,19 +166,19 @@ namespace DemoWebsite.Controllers
         [HttpPost]
         public async Task<IActionResult> GooglePay(string paymentToken)
         {
-           
+
 
             var uri = new Uri("https://api-test.wirecard.com/engine/rest/payments/");
             var username = "70000-APITEST-AP";
             var password = "qD2wzQ_hrc!8";
-            var requestId = Guid.NewGuid().ToString();
+            var requestId = $"cnxtest-{Guid.NewGuid()}";
             var redirecturl = string.Format("{0}://{1}{2}", Request.Scheme,
             Request.Host, "/checkout");
 
             var request = $@"<payment xmlns=""http://www.elastic-payments.com/schema/payment"">
                   <merchant-account-id>9fcacb0d-b46a-4ce2-867b-6723687fdba1</merchant-account-id>
                   <request-id>{requestId}</request-id>
-                  <transaction-type>authorization</transaction-type>
+                  <transaction-type>purchase</transaction-type>
                   <requested-amount currency=""EUR"">0.20</requested-amount>
                   <account-holder>
                     <first-name>John</first-name>
@@ -210,9 +217,11 @@ namespace DemoWebsite.Controllers
                 var responseData = await response.Content.ReadAsStringAsync();
                 var xDoc = XDocument.Parse(responseData);
                 var paymentResponse = new PaymentResponse { Payment = Wirecard.Models.Payment.From(XDocument.Parse(responseData)) };
-                
+
                 return Json(
-                    new { Payload = _wirecardPaymentService.Base64Encode(JsonConvert.SerializeObject(paymentResponse)),
+                    new
+                    {
+                        Payload = _wirecardPaymentService.Base64Encode(JsonConvert.SerializeObject(paymentResponse)),
                         ReturnUrl = string.Concat("/home/", paymentResponse.Payment.TransactionState.Equals("success") ? "success" : "error")
                     });
             }
@@ -222,7 +231,7 @@ namespace DemoWebsite.Controllers
                 throw;
             }
 
-            
+
 
 
         }
@@ -232,40 +241,40 @@ namespace DemoWebsite.Controllers
         /// </summary>
         /// <param name="data">The data.</param>
         /// <returns>System.String.</returns>
-        public string Success(IFormCollection data)
+        public IActionResult Success(IFormCollection data)
         {
-           
-
-            PaymentResponse response = _wirecardPaymentService.GetPaymentResult(data);
-            _logger.LogInformation("Payment Success", response.Payment.RequestId);
-            return $"{response}";
-
-
+            ViewData["Title"] = "Payment Success";
+            return PaymentResultView(data);
         }
 
-        
+        private IActionResult PaymentResultView(IFormCollection data)
+        {
+            PaymentResponse response = _wirecardPaymentService.GetPaymentResult(data);
+            _logger.LogInformation($"{ViewData["Title"]}", response.Payment.RequestId);
+            return View("Result", response);
+        }
+
+
 
         /// <summary>
         /// error response redirect
         /// </summary>
         /// <returns>Task&lt;IActionResult&gt;.</returns>
-        public string Error(IFormCollection data)
+        public IActionResult Error(IFormCollection data)
         {
 
-            PaymentResponse response = _wirecardPaymentService.GetPaymentResult(data);
-            _logger.LogInformation("Payment Error", response.Payment.RequestId);
-            return $"{response}";
+            ViewData["Title"] = "Payment Error";
+            return PaymentResultView(data);
         }
 
         /// <summary>
         /// cancel response redirect
         /// </summary>
         /// <returns>Task&lt;IActionResult&gt;.</returns>
-        public string Cancel(IFormCollection data)
+        public IActionResult Cancel(IFormCollection data)
         {
-            PaymentResponse response = _wirecardPaymentService.GetPaymentResult(data);
-            _logger.LogInformation("Payment Cancel", response.Payment.RequestId);
-            return $"{response}";
+            ViewData["Title"] = "Payment Cancel";
+            return PaymentResultView(data);
         }
 
         /// <summary>
@@ -277,26 +286,81 @@ namespace DemoWebsite.Controllers
         {
             string bodyContent = await new StreamReader(Request.Body).ReadToEndAsync();
             var response = PaymentResponse.Parse(bodyContent, RequestFormat.Json);
-            _logger.LogInformation("Payment Ipn Response", response.Payment.RequestId, response.Payment.TransactionState);
+
+            if (response.Payment.TransactionType.Equals("purcharse"))
+            {
+                _logger.LogInformation($"{response.Payment.RequestId} Payment Ipn Response Tyle was purchase.", response.Payment.RequestId, response.Payment.TransactionState);
+            }
+
+            await LogIpnData(response, bodyContent);
+            _logger.LogInformation($"{response.Payment.RequestId} Payment Ipn Response", response.Payment.RequestId, response.Payment.TransactionState);
 
             return Ok();
         }
 
-
-        public async Task<IActionResult> IpnTest()
+        public IActionResult IpnMessages(string id)
         {
-            string bodyContent = await new StreamReader(Request.Body).ReadToEndAsync();
-            System.IO.File.WriteAllText($"{_hostingEnvironment.WebRootPath}\\{DateTime.Now:yyyyMMdd_HHmmss}.txt", bodyContent);
-            return Ok();
+            if (string.IsNullOrEmpty(id) || id.Length < 44)
+            {
+                return Redirect("/");
+            }
+            ViewData["responseId"] = id;
+            return View(Directory.GetFiles(FilePath, string.Concat(id.Substring(0, 44), "*")));
+        }
+
+        public IActionResult IpnMessage(string id)
+        {
+            if (string.IsNullOrEmpty(id) || id.Length < 44)
+            {
+                return Redirect("/");
+            }
+
+            var data = System.IO.File.ReadAllText(Path.Combine(FilePath, id));
+
+            return Content(JValue.Parse(data).ToString(Formatting.Indented));
+        }
+
+        public async Task LogIpnData(PaymentResponse response, string bodyContent)
+        {
+            try
+            {
+                
+                await System.IO.File.WriteAllTextAsync(Path.Combine($"{FilePath}", $"{response.Payment.RequestId}.json"), bodyContent);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error Logging IPN Data");
+            }
+        }
+
+       
+
+        public string FilePath
+        {
+            get
+            {
+                if (_filePath == null)
+                {
+                    _filePath = Path.Combine($"{_hostingEnvironment.WebRootPath}\\", "ipnData");
+
+                    if (!Directory.Exists(_filePath))
+                    {
+                        Directory.CreateDirectory(_filePath);
+                    }
+                }
+                return _filePath;
+            }
         }
        
+
+
         #region obsolte / old calls
 
-     
 
-      
 
-      
+
+
+
 
         /// <summary>
         /// elastic payment call for Sofortüberweisung / Klarna
@@ -331,7 +395,7 @@ namespace DemoWebsite.Controllers
             return await GetRedirectUrlFromWirecard(uri, username, password, request, RequestFormat.Xml);
         }
 
-      
+
         /// <summary>
         /// legacy method for getting url from wirecard
         /// </summary>
@@ -422,9 +486,9 @@ namespace DemoWebsite.Controllers
         #endregion
     }
 
-   
 
-   
 
-   
+
+
+
 }
