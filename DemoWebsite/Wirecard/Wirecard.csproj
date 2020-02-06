@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>WirecardPayment</PackageId>
-    <Version>0.9.0</Version>
+    <Version>0.9.3</Version>
     <Authors>Roman Wienicke</Authors>
     <Company>conenxion OG</Company>
     <Product>Wirecard Payment for .net</Product>

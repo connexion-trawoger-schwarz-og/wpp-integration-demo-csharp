@@ -85,6 +85,18 @@ namespace Wirecard.Models
         /// </summary>
         /// <value>The ipn default notification URL.</value>
         public string IpnDefaultNotificationUrl { get; set; }
+
+        /// <summary>
+        /// Gets or sets the descriptor.
+        /// </summary>
+        /// <value>The descriptor.</value>
+        public string Descriptor { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the selection is made on the wiredacd grid.
+        /// </summary>
+        /// <value><c>true</c> if [select on wirecard page]; otherwise, <c>false</c>.</value>
+        public bool SelectOnWirecardPage { get; set; }
     }
 
 

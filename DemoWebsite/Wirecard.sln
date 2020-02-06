@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DemoWebsite", "DemoWebsite\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{B5FB4259-580F-4CCF-90E9-4118EFDE06ED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wirecard", "Wirecard\Wirecard.csproj", "{54B76201-30A5-40C2-8F25-219C7E223A14}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wirecard", "Wirecard\Wirecard.csproj", "{54B76201-30A5-40C2-8F25-219C7E223A14}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -54,7 +54,7 @@ namespace Wirecard.Services
         /// <param name="httpContextAccessor">The HTTP context accessor.</param>
         public WirecardPaymentService(IOptions<WirecardConfiguration> wirecardOptions, IHttpContextAccessor httpContextAccessor)
         {
-          
+
 
             _wirecardConfiguration = wirecardOptions.Value;
             _httpContextAccessor = httpContextAccessor;
@@ -165,6 +165,18 @@ namespace Wirecard.Services
         /// <returns>System.String.</returns>
         private string CreatePayload(PaymentInfo paymentInfo, WirecardEndpoint endpoint, WirecardPayment paymentMethod)
         {
+            PaymentMethods paymentMethods = null;
+            
+            if (!endpoint.SelectOnWirecardPage)
+            {
+                paymentMethods = new PaymentMethods
+                {
+                    PaymentMethod = new PaymentMethod[] {
+                            new PaymentMethod { Name = paymentInfo.TypeName ?? paymentMethod.Name }
+                        }
+                };
+            }
+
             // create payload class
             var payload = new Payload
             {
@@ -179,16 +191,11 @@ namespace Wirecard.Services
                     RequestedAmount = paymentInfo.RequestedAmount,
                     AccountHolder = paymentInfo.AccountHolder,
                     Shipping = paymentInfo.Shipping,
-                    PaymentMethods = new PaymentMethods
-                    {
-                        PaymentMethod = new PaymentMethod[] {
-                            new PaymentMethod { Name = paymentInfo.TypeName ?? paymentMethod.Name }
-                        }
-                    },
+                    PaymentMethods = paymentMethods,
                     SuccessRedirectUrl = GetRedirecturl(endpoint.SuccessRedirectUrl),
                     FailRedirectUrl = GetRedirecturl(endpoint.FailRedirectUrl),
                     CancelRedirectUrl = GetRedirecturl(endpoint.CancelRedirectUrl),
-                    Descriptor = "test",
+                    Descriptor = endpoint.Descriptor,
                     Notifications = Notifications.Create(paymentMethod.RequestType, new Notification[] {
                             new Notification {
                                 Url = GetRedirecturl(endpoint.IpnDefaultNotificationUrl)
@@ -402,9 +409,9 @@ namespace Wirecard.Services
             return Encoding.UTF8.GetString(base64EncodedBytes);
         }
 
-        
 
-       
+
+
     }
 
 
