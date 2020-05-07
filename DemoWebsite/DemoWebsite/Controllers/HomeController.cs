@@ -113,7 +113,8 @@ namespace DemoWebsite.Controllers
                 RequestId = $"cnxtest-{Guid.NewGuid()}",
                 PaymentName = paymentName,
                 EndpointName = endpointName,
-                TypeName = typeName
+                TypeName = typeName,
+                Locale = "de"
             };
             _logger.LogInformation("Payment started", paymentName, paymentInfo.RequestId);
             return Redirect(await _wirecardPaymentService.GetRedirectUrlFromWirecardAsync(paymentInfo));

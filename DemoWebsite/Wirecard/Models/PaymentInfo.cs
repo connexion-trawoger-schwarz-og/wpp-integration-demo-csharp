@@ -71,7 +71,12 @@ namespace Wirecard.Models
         /// <value>The type of the transaction.</value>
         public TransactionType? TransactionType { get; set; }
 
-       
+        /// <summary>
+        /// Gets or sets the localization.
+        /// language iso code: de, en, it, ...
+        /// </summary>
+        /// <value>The locale.</value>
+        public string Locale { get; set; }
     }
 
 

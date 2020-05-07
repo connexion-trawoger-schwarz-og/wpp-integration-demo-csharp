@@ -247,5 +247,14 @@ namespace Wirecard.Models
         [JsonProperty(PropertyName = "returnurl")]
         [XmlIgnore]
         public string ReturnUrl { get; set; }
+
+        /// <summary>
+        /// the locale 
+        /// DE or DE-DE
+        /// </summary>
+        /// <value>The API identifier.</value>
+        [XmlElement(ElementName = "locale")]
+        [JsonProperty(PropertyName = "locale")]
+        public string Locale { get; set; }
     }
 }

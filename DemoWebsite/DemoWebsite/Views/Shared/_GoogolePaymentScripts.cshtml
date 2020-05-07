@@ -65,11 +65,8 @@
      * @@see {@@link https://developers.google.com/pay/api/web/reference/object#CardParameters|CardParameters}
      */
     const cardPaymentMethod = Object.assign(
-        {},
-        baseCardPaymentMethod,
-        {
-            tokenizationSpecification: tokenizationSpecification
-        }
+        { tokenizationSpecification: tokenizationSpecification },
+        baseCardPaymentMethod
     );
 
     /**
@@ -180,7 +177,7 @@
      */
     function getGoogleTransactionInfo() {
         return {
-            currencyCode: 'USD',
+            currencyCode: 'EUR',
             totalPriceStatus: 'FINAL',
             // set to cart total
             totalPrice: '1.00'
@@ -197,7 +194,7 @@
         // transactionInfo must be set but does not affect cache
         paymentDataRequest.transactionInfo = {
             totalPriceStatus: 'NOT_CURRENTLY_KNOWN',
-            currencyCode: 'USD'
+            currencyCode: 'EUR'
         };
         const paymentsClient = getGooglePaymentsClient();
         paymentsClient.prefetchPaymentData(paymentDataRequest);
@@ -251,7 +248,7 @@
         $form.submit();
     }
 
- 
+
 </script>
 <script async
         src="https://pay.google.com/gp/p/js/pay.js"

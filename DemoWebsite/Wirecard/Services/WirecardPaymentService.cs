@@ -27,6 +27,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 using System.Collections.Specialized;
 using System.Net;
+using Microsoft.Extensions.Logging;
 
 namespace Wirecard.Services
 {
@@ -35,6 +36,8 @@ namespace Wirecard.Services
     /// </summary>
     public class WirecardPaymentService
     {
+        private readonly ILogger<WirecardPaymentService> _logger;
+
         /// <summary>
         /// configuration
         /// </summary>
@@ -52,10 +55,10 @@ namespace Wirecard.Services
         /// </summary>
         /// <param name="wirecardOptions">The wirecard options.</param>
         /// <param name="httpContextAccessor">The HTTP context accessor.</param>
-        public WirecardPaymentService(IOptions<WirecardConfiguration> wirecardOptions, IHttpContextAccessor httpContextAccessor)
+        public WirecardPaymentService(IOptions<WirecardConfiguration> wirecardOptions, IHttpContextAccessor httpContextAccessor, ILogger<WirecardPaymentService> logger)
         {
 
-
+            _logger = logger;
             _wirecardConfiguration = wirecardOptions.Value;
             _httpContextAccessor = httpContextAccessor;
         }
@@ -83,6 +86,8 @@ namespace Wirecard.Services
         /// <exception cref="Exception">Create redirect url failed: {await response.Content.ReadAsStringAsync()}{Environment.NewLine}</exception>
         public async Task<string> GetRedirectUrlFromWirecardAsync(PaymentInfo paymentInfo)
         {
+            
+
             // set TLS Secuity
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11;
             // http client
@@ -208,7 +213,8 @@ namespace Wirecard.Services
                                 Url = GetRedirecturl(endpoint.IpnFailedNotificationUrl),
                                 TransactionState = TransactionState.Failed }
                             }
-                    )
+                    ),
+                    Locale = paymentInfo.Locale
                 }
 
             };
