@@ -247,5 +247,14 @@ namespace Wirecard.Models
         [JsonProperty(PropertyName = "returnurl")]
         [XmlIgnore]
         public string ReturnUrl { get; set; }
+
+        [JsonProperty(PropertyName ="options", NullValueHandling = NullValueHandling.Ignore)]
+        public Options Options { get; set; }
+    }
+
+    
+    public class Options {
+        [JsonProperty(PropertyName = "theme")]
+        public string Theeme { get; set; }
     }
 }

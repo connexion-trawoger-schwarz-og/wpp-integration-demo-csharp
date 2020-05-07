@@ -97,6 +97,11 @@ namespace Wirecard.Models
         /// </summary>
         /// <value><c>true</c> if [select on wirecard page]; otherwise, <c>false</c>.</value>
         public bool SelectOnWirecardPage { get; set; }
+
+        /// <summary>
+        /// The WPP Theme Name
+        /// </summary>
+        public string Theme { get; set; }
     }
 
 

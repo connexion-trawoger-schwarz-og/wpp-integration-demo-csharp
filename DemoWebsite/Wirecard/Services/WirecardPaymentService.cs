@@ -178,25 +178,24 @@ namespace Wirecard.Services
             }
 
             // create payload class
-            var payload = new Payload
+
+            var payment = new Payment
             {
-                Payment = new Payment
+                MerchantAccountId = new MerchantAccountId
                 {
-                    MerchantAccountId = new MerchantAccountId
-                    {
-                        Value = paymentMethod.MerchantAccountId
-                    },
-                    RequestId = paymentInfo.RequestId,
-                    TransactionType = (paymentInfo.TransactionType ?? paymentMethod.DefaultTransactionType).ToString().ToLower(),
-                    RequestedAmount = paymentInfo.RequestedAmount,
-                    AccountHolder = paymentInfo.AccountHolder,
-                    Shipping = paymentInfo.Shipping,
-                    PaymentMethods = paymentMethods,
-                    SuccessRedirectUrl = GetRedirecturl(endpoint.SuccessRedirectUrl),
-                    FailRedirectUrl = GetRedirecturl(endpoint.FailRedirectUrl),
-                    CancelRedirectUrl = GetRedirecturl(endpoint.CancelRedirectUrl),
-                    Descriptor = endpoint.Descriptor,
-                    Notifications = Notifications.Create(paymentMethod.RequestType, new Notification[] {
+                    Value = paymentMethod.MerchantAccountId
+                },
+                RequestId = paymentInfo.RequestId,
+                TransactionType = (paymentInfo.TransactionType ?? paymentMethod.DefaultTransactionType).ToString().ToLower(),
+                RequestedAmount = paymentInfo.RequestedAmount,
+                AccountHolder = paymentInfo.AccountHolder,
+                Shipping = paymentInfo.Shipping,
+                PaymentMethods = paymentMethods,
+                SuccessRedirectUrl = GetRedirecturl(endpoint.SuccessRedirectUrl),
+                FailRedirectUrl = GetRedirecturl(endpoint.FailRedirectUrl),
+                CancelRedirectUrl = GetRedirecturl(endpoint.CancelRedirectUrl),
+                Descriptor = endpoint.Descriptor,
+                Notifications = Notifications.Create(paymentMethod.RequestType, new Notification[] {
                             new Notification {
                                 Url = GetRedirecturl(endpoint.IpnDefaultNotificationUrl)
                             },
@@ -208,12 +207,16 @@ namespace Wirecard.Services
                                 Url = GetRedirecturl(endpoint.IpnFailedNotificationUrl),
                                 TransactionState = TransactionState.Failed }
                             }
-                    )
-                }
-
+                )
             };
+
+            if (!string.IsNullOrEmpty(endpoint.Theme))
+            {
+                payment.Options = new Models.Options { Theeme = endpoint.Theme };
+            }
+            
             // create json string form payload class
-            var data = JsonConvert.SerializeObject(payload, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            var data = JsonConvert.SerializeObject(new Payload { Payment = payment }, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
             return data;
 
         }
