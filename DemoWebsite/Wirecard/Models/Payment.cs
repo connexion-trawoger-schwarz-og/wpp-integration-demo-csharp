@@ -256,5 +256,14 @@ namespace Wirecard.Models
         [XmlElement(ElementName = "locale")]
         [JsonProperty(PropertyName = "locale")]
         public string Locale { get; set; }
+
+        [JsonProperty(PropertyName ="options", NullValueHandling = NullValueHandling.Ignore)]
+        public Options Options { get; set; }
+    }
+
+    
+    public class Options {
+        [JsonProperty(PropertyName = "theme")]
+        public string Theeme { get; set; }
     }
 }
