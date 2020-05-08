@@ -199,7 +199,7 @@ namespace Wirecard.Services
                 SuccessRedirectUrl = GetRedirecturl(endpoint.SuccessRedirectUrl),
                 FailRedirectUrl = GetRedirecturl(endpoint.FailRedirectUrl),
                 CancelRedirectUrl = GetRedirecturl(endpoint.CancelRedirectUrl),
-                Descriptor = endpoint.Descriptor,
+                Descriptor =  paymentInfo.Descriptor ?? endpoint.Descriptor,
                 Notifications = Notifications.Create(paymentMethod.RequestType, new Notification[] {
                             new Notification {
                                 Url = GetRedirecturl(endpoint.IpnDefaultNotificationUrl)
@@ -213,11 +213,10 @@ namespace Wirecard.Services
                                 TransactionState = TransactionState.Failed }
                             }
                     ),
-                    Locale = paymentInfo.Locale
-                }
 
-            
+                Locale = paymentInfo.Locale
             };
+            
 
             if (!string.IsNullOrEmpty(endpoint.Theme))
             {

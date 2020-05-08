@@ -77,6 +77,11 @@ namespace Wirecard.Models
         /// </summary>
         /// <value>The locale.</value>
         public string Locale { get; set; }
+
+        /// <summary>
+        /// Payment description (may be required for some payment types)
+        /// </summary>
+        public string Descriptor { get; set; }
     }
 
 

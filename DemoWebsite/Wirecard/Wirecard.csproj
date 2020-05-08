@@ -3,12 +3,17 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>WirecardPayment</PackageId>
-    <Version>0.9.5</Version>
+    <Version>1.0.0</Version>
     <Authors>Roman Wienicke</Authors>
     <Company>conenxion OG</Company>
     <Product>Wirecard Payment for .net</Product>
     <Description>.net implementation for Wirecard Payment Page (WPP)</Description>
-    <AssemblyVersion>0.9.5.0</AssemblyVersion>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <PackageTags>Wirecard</PackageTags>
+    <PackageProjectUrl>https://github.com/Connexion-Ibk/wpp-integration-demo-csharp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Connexion-Ibk/wpp-integration-demo-csharp.git</RepositoryUrl>
+    <RepositoryType>Library</RepositoryType>
+    <Copyright>(c) by Connexion OG</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
